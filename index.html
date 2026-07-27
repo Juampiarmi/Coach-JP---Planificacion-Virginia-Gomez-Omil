@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Coach JP — Performance Hub</title>
+<title>Coach JP — Virginia Gomez Omil | Plan de Entrenamiento</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -29,9 +29,13 @@
     --radius-xl: 24px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
-    background: var(--bg);
+    background:
+      radial-gradient(ellipse 1100px 560px at 18% -8%, rgba(255,61,0,0.07), transparent 62%),
+      radial-gradient(ellipse 900px 520px at 100% 8%, rgba(124,77,255,0.05), transparent 58%),
+      radial-gradient(ellipse 700px 480px at 92% 96%, rgba(0,137,123,0.045), transparent 55%),
+      linear-gradient(180deg, #0B0B0D 0%, var(--bg) 40%, #08080A 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
@@ -44,13 +48,10 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: #27272A; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
-
   :focus-visible { outline: 2px solid var(--fire-glow); outline-offset: 2px; border-radius: 4px; }
-
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
-
   nav {
     position: sticky;
     top: 0;
@@ -67,18 +68,36 @@
   }
   .nav-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
   .nav-logo-icon {
-    width: 44px;
-    height: 44px;
-    background: linear-gradient(135deg, var(--fire), #FF1E00);
-    border-radius: var(--radius-sm);
+    position: relative;
+    width: 46px;
+    height: 46px;
+    background:
+      radial-gradient(circle at 30% 22%, rgba(255,255,255,0.16), transparent 40%),
+      linear-gradient(155deg, #3a3a3e 0%, #201f22 45%, #0c0c0d 100%);
+    clip-path: polygon(26% 0%, 74% 0%, 100% 50%, 74% 100%, 26% 100%, 0% 50%);
+    border: 2px solid rgba(255,61,0,0.55);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(255, 61, 0, 0.3);
+    overflow: hidden;
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -8px 12px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 214, 0, 0.08),
+      0 0 14px rgba(255, 61, 0, 0.2);
   }
-  .nav-logo-icon svg { width: 24px; height: 24px; fill: white; }
-
+  .nav-logo-icon::before {
+    content: '';
+    position: absolute;
+    inset: -60% -60% auto -60%;
+    height: 55%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 70%);
+    transform: rotate(-8deg);
+    pointer-events: none;
+  }
+  .nav-logo-icon svg { position: relative; width: 23px; height: 23px; z-index: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
   .nav-brand-text {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
@@ -87,74 +106,143 @@
     color: var(--text-primary);
     line-height: 1;
     text-transform: uppercase;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.06);
   }
   .nav-brand-text span { color: var(--fire); }
-
+  .nav-brand-wordmark { display: flex; flex-direction: column; line-height: 1; }
+  .nav-brand-tag { display: flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fire-glow); margin-top: 5px; }
+  .nav-brand-tag::before, .nav-brand-tag::after { content: ''; display: inline-block; width: 10px; height: 1px; background: rgba(255,109,58,0.5); }
   .nav-right { display: flex; align-items: center; gap: 10px; }
   .nav-badge { background: rgba(255, 61, 0, 0.1); border: 1px solid rgba(255, 61, 0, 0.2); color: var(--fire-glow); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
-
+  .nav-badge-safe { background: rgba(0,137,123,0.12); border: 1px solid rgba(0,137,123,0.28); color: var(--teal-light); }
   .hero { padding: 3rem 2rem 2.5rem; max-width: 1200px; margin: 0 auto; }
   .hero-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fire); margin-bottom: 0.75rem; }
   .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.05; letter-spacing: 0.01em; margin-bottom: 1rem; }
   .hero h1 em { font-style: normal; color: var(--fire); }
   .hero-sub { color: var(--text-secondary); font-size: 1rem; max-width: 720px; margin-bottom: 1.5rem; }
-
   .hero-stats { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; align-items: center; }
   .stat-pill { display: flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 30px; padding: 8px 16px; font-size: 13px; color: var(--text-secondary); }
   .stat-pill b { color: var(--text-primary); font-weight: 600; }
   .stat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--fire); flex-shrink: 0; }
-
   .progress-wrap { flex: 1 1 260px; min-width: 220px; max-width: 360px; }
   .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
   .progress-label b { color: var(--text-primary); }
   .progress-track { height: 8px; border-radius: 20px; background: rgba(255,255,255,0.06); overflow: hidden; }
   .progress-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--fire), var(--gold)); width: 0%; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
-
-  .reset-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s ease; }
-  .reset-btn:hover { border-color: rgba(255,61,0,0.4); color: var(--fire-glow); }
-
-  .mesociclo-box { background: rgba(124, 77, 255, 0.03); border: 1px solid rgba(124, 77, 255, 0.12); border-radius: var(--radius-lg); padding: 1.5rem; margin: 2rem auto 0; max-width: 1200px; font-size: 14px; color: var(--text-secondary); }
+  .reset-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; transition: border-color 0.25s cubic-bezier(0.16,1,0.3,1), color 0.25s ease, transform 0.2s ease; }
+  .reset-btn:hover { border-color: rgba(255,61,0,0.4); color: var(--fire-glow); transform: translateY(-1px); }
+  .mesociclo-box {
+    position: relative;
+    background: linear-gradient(160deg, rgba(124,77,255,0.07), rgba(255,61,0,0.02) 60%, rgba(124,77,255,0.03));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin: 2rem auto 0;
+    max-width: 1200px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    box-shadow: 0 20px 50px -24px rgba(0,0,0,0.6);
+  }
+  .mesociclo-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(160deg, rgba(124,77,255,0.5), rgba(255,255,255,0.06) 40%, rgba(255,61,0,0.18) 80%, rgba(124,77,255,0.35));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
   .mesociclo-box h3 { font-family: 'Barlow Condensed', sans-serif; color: var(--violet-light); font-size: 1.3rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em; }
   .mesociclo-box strong { color: var(--text-primary); }
   .mesociclo-box ul { margin-top: 0.8rem; padding-left: 0; list-style: none; }
   .mesociclo-box li { display: flex; gap: 0.75rem; padding: 8px 10px; border-radius: 8px; border: 1px solid transparent; transition: all 0.2s ease; }
-  .mesociclo-box li.week-active { background: rgba(255,61,0,0.06); border-color: rgba(255,61,0,0.25); }
-  .mesociclo-box li.week-active .week-num { background: var(--fire); color: #fff; }
-  .week-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.06); color: var(--text-secondary); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
-  .mesociclo-warning { margin-top: 1rem; padding: 10px 14px; background: rgba(255, 61, 0, 0.04); border-left: 3px solid var(--fire); border-radius: 4px; color: var(--text-primary); font-size: 13px; }
-
+  .mesociclo-box li.day-training { background: rgba(255,61,0,0.06); border-color: rgba(255,61,0,0.2); }
+  .mesociclo-box li.day-training .week-num { background: var(--fire); color: #fff; }
+  .mesociclo-box li.day-rest .week-num { background: rgba(255,255,255,0.04); color: var(--text-muted); }
+  .mesociclo-box li.day-pending { background: rgba(255,255,255,0.015); border: 1px dashed rgba(255,255,255,0.09); }
+  .mesociclo-box li.day-pending .week-num { background: rgba(124,77,255,0.14); color: var(--violet-light); }
+  .mesociclo-box li.day-pending span { color: var(--text-muted); }
+  .week-num { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.06); color: var(--text-secondary); font-size: 10.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .mesociclo-warning { margin-top: 1rem; padding: 12px 14px; background: rgba(255, 61, 0, 0.04); border-left: 3px solid var(--fire); border-radius: 4px; color: var(--text-primary); font-size: 13px; line-height: 1.7; }
+  .mesociclo-warning b { color: var(--fire-glow); }
+  .taper-guide-box { margin-top: 1.5rem; }
+  .taper-guide-box h3 { color: var(--gold); }
+  .taper-guide-box li { padding: 8px 10px; }
+  .taper-guide-box .tg-tag { font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; color: var(--gold); background: rgba(255,214,0,0.1); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-right: 6px; white-space: nowrap; }
+  .rm-calc-box { margin: 1.5rem auto 0; }
+  .rm-calc-box h3 { color: var(--gold); display: flex; align-items: center; gap: 8px; }
+  .rm-calc-box > p { margin-bottom: 1rem; }
+  .rm-calc-inputs { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
+  .rm-calc-inputs label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); flex: 1 1 160px; min-width: 140px; }
+  .rm-calc-inputs input { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-primary); font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 700; padding: 8px 12px; border-radius: var(--radius-sm); outline: none; transition: border-color 0.2s ease; }
+  .rm-calc-inputs input:focus { border-color: var(--gold); }
+  .rm-calc-btn { flex: 0 0 auto; background: linear-gradient(155deg, #FFE066, var(--gold)); color: #1a1400; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 11px 22px; border-radius: var(--radius-sm); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .rm-calc-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,214,0,0.25); }
+  .rm-calc-result { margin-top: 1.25rem; padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,0.07); }
+  .rm-calc-1rm { font-family: 'Barlow Condensed', sans-serif; font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 0.9rem; }
+  .rm-calc-1rm b { color: var(--gold); font-size: 1.3rem; }
+  .rm-calc-table { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .rm-pct-chip { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 6px; text-align: center; }
+  .rm-pct-chip .rm-pct { display: block; font-size: 10.5px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.04em; margin-bottom: 3px; }
+  .rm-pct-chip .rm-kg { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--text-primary); }
+  .rm-calc-note { margin-top: 0.9rem; font-size: 11.5px; color: var(--text-muted); }
+  @media (max-width: 640px) {
+    .rm-calc-inputs { flex-direction: column; align-items: stretch; }
+    .rm-calc-btn { width: 100%; }
+  }
+  .mode-toggle-wrap { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+  .mode-toggle { display: flex; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 30px; padding: 4px; gap: 4px; }
+  .mode-btn { background: none; border: none; color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; padding: 7px 16px; border-radius: 24px; cursor: pointer; transition: all 0.25s cubic-bezier(0.16,1,0.3,1); }
+  .mode-btn:hover { color: var(--text-primary); }
+  .mode-btn.active { background: linear-gradient(135deg, var(--fire), var(--gold)); color: #1a0f00; }
+  .mode-note { font-size: 11.5px; color: var(--text-muted); }
   .week-selector { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.25rem; flex-wrap: wrap; }
   .week-selector-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
-  .week-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif; }
-  .week-btn:hover { border-color: rgba(124,77,255,0.4); color: var(--text-primary); }
+  .week-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: border-color 0.25s cubic-bezier(0.16,1,0.3,1), color 0.25s ease, background 0.25s ease, transform 0.2s ease; font-family: 'Inter', sans-serif; }
+  .week-btn:hover { border-color: rgba(124,77,255,0.4); color: var(--text-primary); transform: translateY(-1px); }
   .week-btn.active { background: rgba(124,77,255,0.16); border-color: var(--violet); color: var(--text-primary); }
-
   .filters-wrap { background: var(--bg-filter); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 75px; z-index: 90; overflow-x: auto; }
   .filters-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; min-width: max-content; }
   .filter-group { display: flex; align-items: center; gap: 0.5rem; }
   .filter-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
-  .chip { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; user-select: none; }
-  .chip:hover { border-color: rgba(255,61,0,0.3); color: var(--text-primary); background: rgba(255,61,0,0.04); }
+  .chip { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: border-color 0.25s cubic-bezier(0.16,1,0.3,1), color 0.25s ease, background 0.25s ease, transform 0.2s ease; user-select: none; }
+  .chip:hover { border-color: rgba(255,61,0,0.3); color: var(--text-primary); background: rgba(255,61,0,0.04); transform: translateY(-1px); }
   .chip.active { background: rgba(255,61,0,0.12); border-color: var(--fire); color: var(--text-primary); font-weight: 600; }
-
   .grid-wrap { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 4rem; }
   .grid-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 1.25rem; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
-  .card:hover, .card:focus-visible { transform: translateY(-4px); border-color: rgba(255,61,0,0.25); background: var(--bg-card-hover); box-shadow: 0 12px 24px rgba(0,0,0,0.2); }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: transform 0.32s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, box-shadow 0.4s ease, background 0.3s ease; display: flex; flex-direction: column; }
+  .card:hover, .card:focus-visible {
+    transform: translateY(-5px);
+    border-color: rgba(255,61,0,0.35);
+    background: var(--bg-card-hover);
+    box-shadow:
+      0 0 0 1px rgba(255,61,0,0.1),
+      0 0 44px -6px rgba(255,61,0,0.28),
+      0 24px 44px -16px rgba(0,0,0,0.6),
+      0 10px 18px rgba(0,0,0,0.32);
+  }
   .card.completed { opacity: 0.5; }
   .card.completed .card-desc, .card.completed h2 { opacity: 0.7; }
-  .card-accent { height: 4px; width: 100%; background: linear-gradient(90deg, var(--violet), #651FFF); flex-shrink: 0; }
+  .card.pending { opacity: 0.45; cursor: not-allowed; }
+  .card.pending:hover { transform: none; box-shadow: none; border-color: var(--border); background: var(--bg-card); }
+  .card-accent { height: 4px; width: 100%; background: linear-gradient(90deg, var(--fire), var(--gold)); flex-shrink: 0; }
+  .card.pending .card-accent { background: rgba(255,255,255,0.08); }
   .card-body { padding: 1.5rem; flex: 1; pointer-events: none; }
   .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
   .tag { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
-  .tag-disc-musculacion { background: rgba(124,77,255,0.12); color: var(--violet-light); }
-  .tag-level-avanzado { background: rgba(255,61,0,0.08); color: var(--fire-glow); }
+  .tag-disc-musculacion { background: rgba(255,61,0,0.08); color: var(--fire-glow); }
+  .tag-level-avanzado { background: rgba(124,77,255,0.12); color: var(--violet-light); }
   .tag-done { background: rgba(0,137,123,0.14); color: var(--teal-light); }
+  .tag-pending { background: rgba(255,255,255,0.05); color: var(--text-muted); }
   .card h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; line-height: 1.2; margin-bottom: 0.5rem; color: var(--text-primary); }
   .card-desc { font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .card-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; pointer-events: none; }
-
   .card-footer button {
     pointer-events: auto;
     background: rgba(255, 255, 255, 0.05);
@@ -174,29 +262,28 @@
     border-color: var(--fire);
     color: #fff;
   }
+  .card-footer button:disabled { cursor: not-allowed; opacity: 0.6; }
+  .card-footer button:disabled:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
   .card.completed .card-footer button { background: rgba(0, 137, 123, 0.15); border-color: rgba(0, 137, 123, 0.3); color: var(--teal-light); }
-
   .card-meta-info { display: flex; gap: 12px; }
   .meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
   .meta-item svg { width: 14px; height: 14px; flex-shrink: 0; stroke: currentColor; }
-
   .overlay { display: none; position: fixed; inset: 0; background: rgba(5,5,6,0.85); z-index: 200; align-items: flex-end; justify-content: center; padding: 0; backdrop-filter: blur(8px); }
   .overlay.open { display: flex; }
   @media (min-width: 640px) { .overlay { align-items: center; padding: 2rem; } }
-
   .modal {
     background: #121214;
     border: 1px solid var(--border);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     width: 100%;
-    max-width: 800px;
-    max-height: 85vh;
+    max-width: 840px;
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  @media (min-width: 640px) { .modal { border-radius: var(--radius-lg); max-height: 80vh; } }
+  @media (min-width: 640px) { .modal { border-radius: var(--radius-lg); max-height: 84vh; } }
   @keyframes slideUp {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
@@ -232,53 +319,149 @@
     overflow-y: auto;
     flex: 1;
   }
-  .block { background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
+  .modal-safety-box { background: rgba(255,61,0,0.05); border: 1px solid rgba(255,61,0,0.22); border-radius: var(--radius-md); padding: 1rem 1.1rem; margin-bottom: 1.5rem; }
+  .modal-safety-box .modal-safety-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--fire-glow); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.6rem; }
+  .modal-safety-box ul { list-style: none; padding: 0; margin: 0; }
+  .modal-safety-box li { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; padding: 4px 0; display: flex; gap: 8px; }
+  .modal-safety-box li::before { content: '🛡️'; flex-shrink: 0; }
+  .block { background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; transition: border-color 0.3s ease; }
   .block-header { padding: 1rem 1.25rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .block-header-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; flex-wrap: wrap; }
   .block-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
   .block-title.warmup { color: var(--gold); }
   .block-title.main { color: var(--fire-glow); }
   .block-title.metcon { color: var(--teal-light); }
+  .block-title.core { color: var(--violet-light); }
   .block-content { padding: 0.5rem 1.25rem; }
-  .exercise-row { display: flex; gap: 16px; padding: 1.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); align-items: flex-start; justify-content: space-between; }
+  .block-optional-tag { font-size: 9.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--violet-light); background: rgba(124,77,255,0.12); padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+  .block-check-badge { font-size: 11px; font-weight: 800; color: var(--teal-light); display: none; align-items: center; gap: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .block.block-complete { border-color: rgba(0,137,123,0.4); }
+  .block.block-complete .block-check-badge { display: flex; }
+  .exercise-row { display: flex; gap: 16px; padding: 1.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
   .exercise-row:last-child { border-bottom: none; }
-  .exercise-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-muted); min-width: 20px; }
-  .exercise-title-container { display: flex; align-items: flex-start; gap: 12px; flex: 1; max-width: 70%; }
-  .exercise-name { font-weight: 600; font-size: 1rem; color: var(--text-primary); }
-  .exercise-name sub { display: block; font-size: 13px; color: var(--text-secondary); font-style: normal; margin-top: 6px; line-height: 1.5; font-family: 'Inter', sans-serif; }
-  .exercise-name sub b { color: var(--text-primary); }
-
-  .exercise-detail { font-size: 13px; color: var(--text-secondary); text-align: right; max-width: 30%; line-height: 1.4; }
-  .exercise-detail b { display: block; color: var(--text-primary); font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-
+  .exercise-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.3rem; color: var(--fire-glow); min-width: 24px; background: rgba(255,61,0,0.06); height: 28px; width: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .exercise-title-container { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex: 1; min-width: 200px; max-width: 65%; }
+  .exercise-name { font-weight: 700; font-size: 1.1rem; color: var(--text-primary); letter-spacing: 0.01em; }
+  .video-link { color: var(--gold); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-left: 4px; font-size: 12px; letter-spacing: 0.02em; border-bottom: 1px solid rgba(255,214,0,0.3); padding-bottom: 1px; cursor: pointer; white-space: nowrap; }
+  .video-link:hover { color: var(--fire-glow); border-color: var(--fire-glow); }
+  .video-popup-wrap { display: none; position: fixed; bottom: 20px; right: 20px; z-index: 300; width: 320px; max-width: calc(100vw - 32px); }
+  .video-popup-wrap.open { display: block; }
+  .video-popup { position: relative; background: #121214; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 16px 44px rgba(0,0,0,0.6); animation: videoPopIn 0.22s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes videoPopIn { from { transform: translateY(16px) scale(0.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+  .video-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 8px 12px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
+  .video-popup-close { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text-secondary); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; line-height: 1; transition: all 0.2s ease; flex-shrink: 0; }
+  .video-popup-close:hover { background: var(--fire); border-color: var(--fire); color: #fff; }
+  .video-popup-frame { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+  .video-popup-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .video-popup-fallback { padding: 7px 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); font-size: 11.5px; color: var(--text-muted); text-align: center; }
+  .video-popup-fallback a { color: var(--gold); font-weight: 600; text-decoration: none; }
+  .video-popup-fallback a:hover { color: var(--fire-glow); }
+  @media (max-width: 640px) {
+    .video-popup-wrap { left: 12px; right: 12px; bottom: 12px; width: auto; max-width: none; }
+  }
+  .exercise-detail { font-size: 13px; color: var(--text-secondary); text-align: right; max-width: 32%; line-height: 1.5; background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); min-width: 140px; }
+  .exercise-detail b { display: block; color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; text-align: center; }
+  .ex-timer { margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .ex-timer-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .ex-timer.rest .ex-timer-tag { color: var(--fire-glow); }
+  .ex-timer.work .ex-timer-tag { color: var(--teal-light); }
+  .ex-timer-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.9rem; letter-spacing: 0.03em; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1; }
+  .ex-timer.running .ex-timer-display { color: var(--gold); }
+  .ex-timer.done .ex-timer-display { color: var(--teal-light); animation: exTimerPulse 0.55s ease 2; }
+  @keyframes exTimerPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+  .ex-timer-controls { display: flex; gap: 8px; }
+  .ex-timer-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; transition: all 0.2s ease; }
+  .ex-timer.rest .ex-timer-toggle:hover, .ex-timer.rest.running .ex-timer-toggle { background: rgba(255,61,0,0.2); border-color: var(--fire); }
+  .ex-timer.work .ex-timer-toggle:hover, .ex-timer.work.running .ex-timer-toggle { background: rgba(0,137,123,0.25); border-color: var(--teal); }
+  .ex-timer-reset:hover { background: rgba(255,255,255,0.12); }
+  .set-checks { display: flex; gap: 6px; flex-wrap: wrap; }
+  .set-check { width: 27px; height: 27px; border-radius: 50%; border: 1px solid var(--border); background: rgba(255,255,255,0.03); cursor: pointer; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s ease; font-family: 'Inter', sans-serif; flex-shrink: 0; }
+  .set-check:hover { border-color: rgba(255,61,0,0.4); color: var(--text-primary); }
+  .set-check.done { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .group-block { border: 1px solid var(--border); border-radius: var(--radius-md); margin: 0.5rem 0 1.25rem; overflow: hidden; transition: border-color 0.3s ease; }
+  .group-block:last-child { margin-bottom: 0.5rem; }
+  .group-block-header { padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .group-block-title-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .group-block-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-primary); }
+  .format-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 12px; white-space: nowrap; }
+  .format-tag.straight { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+  .format-tag.biset { background: rgba(124,77,255,0.14); color: var(--violet-light); }
+  .format-tag.triset { background: rgba(255,214,0,0.12); color: var(--gold); }
+  .group-complete-badge { display: none; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 800; color: var(--teal-light); letter-spacing: 0.04em; text-transform: uppercase; }
+  .group-block.block-complete { border-color: rgba(0,137,123,0.45); }
+  .group-block.block-complete .group-complete-badge { display: flex; }
+  .group-block-body { padding: 0.25rem 1rem; }
+  .group-ex-row { display: flex; gap: 14px; padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.07); align-items: flex-start; flex-wrap: wrap; }
+  .group-ex-row:last-child { border-bottom: none; }
+  .group-ex-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1rem; color: #fff; background: var(--violet); min-width: 32px; height: 27px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-top: 2px; flex-shrink: 0; }
+  .group-ex-main { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 8px; }
+  .group-ex-name { font-weight: 700; font-size: 1.02rem; color: var(--text-primary); }
+  .group-ex-detail { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+  .group-ex-detail b { color: var(--gold); }
+  .tempo-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-style: italic; line-height: 1.5; }
+  .cue-note { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+  .cue-note b { color: var(--violet-light); font-style: normal; }
+  .group-round-timer { padding: 0.9rem 1rem 1.1rem; border-top: 1px solid var(--border); background: rgba(255,255,255,0.015); }
+  .group-round-timer-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; text-align: center; }
+  .block-notes { padding: 0.9rem 1rem 1.1rem; border-top: 1px solid var(--border); }
+  .block-notes p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 6px; }
+  .block-notes p:last-child { margin-bottom: 0; }
+  .cooldown-list { padding: 1rem 0; font-size: 13.5px; color: var(--text-secondary); line-height: 2; }
+  .cooldown-list li { list-style: none; padding-left: 1.4rem; position: relative; }
+  .cooldown-list li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
   .modal-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; background: #121214; flex-shrink: 0; }
-  .btn-complete { flex: 1; background: var(--fire); color: white; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 12px 24px; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; }
-  .btn-complete:hover { background: #FF5722; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,61,0,0.2); }
+  .btn-complete { flex: 1; background: var(--fire); color: white; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 12px 24px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.2s ease, box-shadow 0.3s ease; }
+  .btn-complete:hover { background: #FF5722; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,61,0,0.3); }
+  .btn-complete:active { transform: translateY(0) scale(0.98); }
   .btn-complete.done { background: var(--teal); }
   .btn-complete.done:hover { background: #00796B; box-shadow: 0 4px 12px rgba(0,137,123,0.2); }
   .btn-close-modal { background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 12px 20px; border-radius: var(--radius-md); cursor: pointer; }
   .btn-close-modal:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
   .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
-
   .skeleton-note { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 13px; }
-
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-
+  /* ===== HIIT interval timer ===== */
+  .hiit-widget { padding: 1rem 1.1rem 1.2rem; }
+  .hiit-timer { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 1.2rem 1rem; background: rgba(255,255,255,0.015); border: 1px solid var(--border); border-radius: var(--radius-md); }
+  .hiit-round-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .hiit-phase-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--teal-light); transition: color 0.2s ease; }
+  .hiit-timer.phase-work .hiit-phase-label { color: var(--fire-glow); }
+  .hiit-station-label { font-size: 12.5px; color: var(--text-secondary); text-align: center; min-height: 1.2em; }
+  .hiit-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 3rem; letter-spacing: 0.02em; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1; }
+  .hiit-timer.running .hiit-display { color: var(--gold); }
+  .hiit-timer.finished .hiit-display { color: var(--teal-light); animation: exTimerPulse 0.55s ease 2; }
+  .hiit-controls { display: flex; gap: 10px; margin-top: 4px; }
+  .hiit-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 20px; border-radius: 20px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; }
+  .hiit-btn:hover { background: rgba(255,61,0,0.15); border-color: var(--fire); }
+  .hiit-btn.reset:hover { background: rgba(255,255,255,0.12); border-color: var(--border); }
+  .hiit-rounds-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 1rem 0 0.5rem; text-align: center; }
+  /* ===== safety alert box (session-level clinical adaptation notes) ===== */
   @media (max-width: 640px) {
-    nav { padding: 0 0.75rem; height: 70px; }
+    nav { flex-wrap: wrap; row-gap: 8px; padding: 10px 0.75rem; height: auto; min-height: 70px; }
     .nav-brand { gap: 10px; }
     .nav-brand-text { font-size: 1.7rem; }
+    .nav-brand-tag { display: none; }
     .nav-logo-icon { width: 38px; height: 38px; }
-    .nav-logo-icon svg { width: 20px; height: 20px; }
-    .hero { padding: 2rem 1rem; }
-    .filters-wrap { padding: 0.75rem 1rem; top: 70px; }
+    .nav-logo-icon svg { width: 18px; height: 18px; }
+    .nav-right { width: 100%; justify-content: flex-start; }
+    .nav-badge { white-space: normal; text-align: left; font-size: 10.5px; line-height: 1.4; padding: 4px 10px; }
+    .hero { padding: 1.75rem 1rem 2rem; }
+    .hero-eyebrow { font-size: 11px; }
+    .hero-stats { gap: 0.6rem; }
+    .stat-pill { padding: 7px 12px; font-size: 12px; }
+    .filters-wrap { padding: 0.75rem 1rem; top: auto; position: static; }
     .grid-wrap { padding: 1.5rem 1rem 3rem; }
     .grid { grid-template-columns: 1fr; gap: 1rem; }
-    .exercise-row { flex-direction: column; gap: 12px; }
+    .exercise-row { flex-direction: column; gap: 14px; padding: 1.25rem 0; }
     .exercise-title-container { max-width: 100%; min-width: 100%; }
-    .exercise-detail { text-align: left; max-width: 100%; min-width: 100%; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 10px; }
+    .exercise-detail { text-align: left; max-width: 100%; min-width: 100%; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; }
+    .exercise-detail b { text-align: left; padding-bottom: 6px; }
+    .group-ex-row { flex-direction: column; gap: 10px; }
     .modal-footer { flex-direction: column; }
     .btn-close-modal { order: 2; }
     .progress-wrap { max-width: 100%; }
+    .modal-body, .modal-content { -webkit-overflow-scrolling: touch; }
+    .hiit-display { font-size: 2.4rem; }
   }
 </style>
 </head>
@@ -286,66 +469,118 @@
 <nav>
   <a class="nav-brand" href="#">
     <div class="nav-logo-icon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4.09 12.99 12 12.01 11 22l8.91-10.99-7.91.98z"/></svg>
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="boltGrad" x1="4" y1="1" x2="19" y2="23" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="60%" stop-color="#FFF6E0"/>
+            <stop offset="100%" stop-color="#FFD600"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#boltGrad)" fill-rule="evenodd" clip-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z"/>
+      </svg>
     </div>
-    <span class="nav-brand-text">COACH<span>&nbsp;JP</span></span>
+    <div class="nav-brand-wordmark">
+      <span class="nav-brand-text">COACH<span>&nbsp;JP</span></span>
+      <span class="nav-brand-tag">Readaptación &amp; Fuerza +50</span>
+    </div>
   </a>
-  <div class="nav-right"><span class="nav-badge" id="nav-badge-level">Cargando…</span></div>
+  <div class="nav-right">
+    <span class="nav-badge nav-badge-safe" title="Lumbar seguro · Sin Valsalva · Sin impacto en 5º metatarso">🛡️ Protocolo Clínico Activo</span>
+    <span class="nav-badge" id="nav-badge-level">Cargando…</span>
+  </div>
 </nav>
-
 <section class="hero">
-  <p class="hero-eyebrow">Performance Hub — Alumna: <span id="student-name-text">Cargando…</span></p>
+  <p class="hero-eyebrow">Performance Hub — Alumna: <span id="student-name-text">Virginia Gomez Omil</span></p>
   <h1 id="hero-title">Plan de Entrenamiento<br><em id="student-objective-text">Cargando…</em></h1>
-  <p class="hero-sub" id="hero-subtitle">Plan optimizado y diseñado por el <strong>Coach JP</strong> — Profesor de Educación Física, especialista en biomecánica, fuerza y alto rendimiento deportivo.</p>
-
+  <p class="hero-sub" id="hero-subtitle">Mesociclo de recomposición corporal diseñado por el <strong>Coach JP</strong> — hipertrofia adaptada a la longevidad y seguridad articular, con cierre metabólico controlado según indicación médica.</p>
+  <div class="mesociclo-box rm-calc-box">
+    <h3>🧮 Calculadora de RM (1 Repetición Máxima)</h3>
+    <p>Ingresá el peso que usaste y las repeticiones que hiciste en una serie exigente (RPE 7-8, sin llegar al fallo técnico) para estimar tu RM y las cargas de trabajo por porcentaje.</p>
+    <div class="rm-calc-inputs">
+      <label for="rm-weight">Peso levantado (kg)
+        <input type="number" id="rm-weight" min="0" step="0.5" placeholder="Ej: 40" inputmode="decimal" />
+      </label>
+      <label for="rm-reps">Repeticiones realizadas
+        <input type="number" id="rm-reps" min="1" max="15" step="1" placeholder="Ej: 8" inputmode="numeric" />
+      </label>
+      <button type="button" id="rm-calc-btn" class="rm-calc-btn">Calcular RM</button>
+    </div>
+    <div class="rm-calc-result" id="rm-calc-result" style="display:none;">
+      <div class="rm-calc-1rm">RM estimado: <b id="rm-1rm-value">-- kg</b></div>
+      <div class="rm-calc-table" id="rm-calc-table"></div>
+    </div>
+    <p class="rm-calc-note">Estimación por fórmula de Epley — más precisa con series de 1 a 10 repeticiones. Es una referencia, no un valor exacto: en Virginia siempre prevalece la técnica y el control presor/respiratorio por sobre el número en la barra.</p>
+  </div>
   <div class="hero-stats">
-    <div class="stat-pill"><div class="stat-dot"></div><b id="stat-count">0</b>&nbsp;rutinas programadas</div>
-    <div class="stat-pill"><div class="stat-dot" style="background:var(--gold)"></div><b id="stat-week">1</b>&nbsp;semana del mesociclo</div>
+    <div class="stat-pill"><div class="stat-dot"></div><b id="stat-count">0</b>&nbsp;sesiones programadas</div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--violet)"></div>Split&nbsp;<b>Glúteo/Pierna + Torso + Core</b>&nbsp;x5 días</div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--gold)"></div><b>RPE 7-9</b>&nbsp;· Sin llegar al fallo</div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--teal)"></div><b>HIIT Bajo Impacto</b>&nbsp;· Cierre metabólico</div>
     <div class="progress-wrap">
       <div class="progress-label"><span>Progreso semanal</span><b id="progress-pct">0%</b></div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
-    <button class="reset-btn" id="reset-progress" title="Borra las sesiones marcadas como completadas">Reiniciar progreso</button>
+    <button class="reset-btn" id="reset-progress" title="Borra las sesiones y series marcadas como completadas">Reiniciar progreso</button>
   </div>
-
+  <div class="mode-toggle-wrap">
+    <span class="week-selector-label">Duración de sesión</span>
+    <div class="mode-toggle">
+      <button type="button" class="mode-btn" data-mode="sin-hiit">⚡ Sin HIIT</button>
+      <button type="button" class="mode-btn" data-mode="con-hiit">🔥 Con HIIT</button>
+    </div>
+    <span class="mode-note" id="mode-note-text"></span>
+  </div>
+  <div class="week-selector">
+    <span class="week-selector-label">Semana del mesociclo</span>
+    <button type="button" class="week-btn" data-week="1">Semana 1</button>
+    <button type="button" class="week-btn" data-week="2">Semana 2</button>
+    <button type="button" class="week-btn" data-week="3">Semana 3</button>
+    <button type="button" class="week-btn" data-week="4">Semana 4 (Descarga)</button>
+  </div>
   <div class="mesociclo-box" id="mesociclo-content">
-    <h3>Estrategia general del mesociclo: acondicionamiento HIIT, mejora de composición corporal y estabilidad lumbopélvica</h3>
-    <p>Este macro-bloque se organiza en un <strong>mesociclo pedagógico adaptado de 4 semanas</strong>, orientado a cumplir la recomendación médica de picos metabólicos controlados (HIIT) para la estabilización y modulación de la presión arterial, asegurando al mismo tiempo vectores de fuerza sin sobrecarga axial ni cizallamiento en la zona lumbar. Tocá una semana para marcarla como la actual:</p>
+    <h3>Metodología: Glúteo/Pierna + Torso Estético + Core, 5 días</h3>
+    <p>Frecuencia 5 días/semana con bloque final opcional de HIIT/cardio metabólico de bajo impacto (según indicación médica). Los días se van sumando a la app a medida que se aprueban en la Fase 1 de texto — hoy está disponible el <strong>Día 1</strong>.</p>
     <ul id="mesociclo-weeks">
-      <li data-week="1"><span class="week-num">1</span><span><strong>Semana 1:</strong> establecimiento de las cargas base (ligeras). Bloques HIIT controlados e inicio del volumen acumulativo de core. RPE metabólico objetivo: 6-7.</span></li>
-      <li data-week="2"><span class="week-num">2</span><span><strong>Semana 2:</strong> progresión del volumen efectivo e incrementos ligeros de peso (intermedio). Inclusión de variantes en el empuje vertical estático. RPE objetivo: 7.</span></li>
-      <li data-week="3"><span class="week-num">3</span><span><strong>Semana 3:</strong> pico máximo de intensidad y densidad metabólica. Esfuerzo semipesado en fuerza y máxima potencia segura en Assault Bike/Remo. RPE objetivo: 8-8.5.</span></li>
-      <li data-week="4"><span class="week-num">4</span><span><strong>Semana 4:</strong> descarga regenerativa tensional. Eliminación estricta de repeticiones parciales e isometrías mantenidas en pared, para mitigar picos de presión hidrostática. RPE: 5-6.</span></li>
+      <li class="day-training"><span class="week-num">L</span><span><strong>Lunes — Día 1, Glúteo/Femorales:</strong> bisagra de cadera e isquiotibiales-dominante, 100% en máquina/polea/apoyo torácico.</span></li>
+      <li class="day-pending"><span class="week-num">M</span><span><strong>Martes — Día 2:</strong> pendiente de definición conjunta.</span></li>
+      <li class="day-pending"><span class="week-num">X</span><span><strong>Miércoles — Día 3:</strong> pendiente de definición conjunta.</span></li>
+      <li class="day-pending"><span class="week-num">J</span><span><strong>Jueves — Día 4:</strong> pendiente de definición conjunta.</span></li>
+      <li class="day-pending"><span class="week-num">V</span><span><strong>Viernes — Día 5:</strong> pendiente de definición conjunta.</span></li>
+      <li class="day-rest"><span class="week-num">S</span><span><strong>Sábado:</strong> descanso.</span></li>
+      <li class="day-rest"><span class="week-num">D</span><span><strong>Domingo:</strong> descanso.</span></li>
     </ul>
     <div class="mesociclo-warning" id="student-warning-box">
-      <strong>⚠️ Protocolo de cuidados especiales:</strong> <span id="student-injury-text">Ninguno reportado.</span>
-    </div>
-    <div class="week-selector" role="group" aria-label="Seleccionar semana del mesociclo">
-      <span class="week-selector-label">Semana actual:</span>
-      <button class="week-btn" data-week="1">Semana 1</button>
-      <button class="week-btn" data-week="2">Semana 2</button>
-      <button class="week-btn" data-week="3">Semana 3</button>
-      <button class="week-btn" data-week="4">Semana 4</button>
+      <strong>⚠️ NOTA DEL COACH — Protocolo Clínico Obligatorio:</strong> <span id="student-injury-text"></span>
     </div>
   </div>
+  <div class="mesociclo-box taper-guide-box">
+    <h3>Hábitos que potencian la recomposición corporal</h3>
+    <p>El entrenamiento es una parte del estímulo — esto es lo que lo sostiene el resto de la semana:</p>
+    <ul>
+      <li><span class="tg-tag">Proteína</span><span>1.6 a 2.0g por kg de peso corporal por día, repartida en 3-4 comidas — pilar clave para preservar y ganar masa muscular magra después de los 50.</span></li>
+      <li><span class="tg-tag">Sueño</span><span>7-9 horas por noche. Ventana principal de recuperación hormonal y articular — sin esto, el estímulo de la sesión rinde mucho menos.</span></li>
+      <li><span class="tg-tag">Progresión</span><span>Progresá semana a semana dentro del rango RPE 7-9: más reps, mejor técnica o descansos más eficientes — nunca sacrificando la ejecución por más peso.</span></li>
+      <li><span class="tg-tag">Hidratación</span><span>Al menos 30-35ml por kg de peso corporal por día, más en los días con bloque de HIIT.</span></li>
+      <li><span class="tg-tag">Consistencia</span><span>Una sesión perfecta vale menos que cinco semanas consistentes al 90%. Priorizá no fallar antes que hacerlo perfecto.</span></li>
+      <li><span class="tg-tag">Semana 4</span><span>Cada 4 semanas, bajá el volumen ~40% (menos series, mismo peso, sin HIIT) para disipar fatiga acumulada antes del próximo mesociclo.</span></li>
+    </ul>
+  </div>
 </section>
-
 <div class="filters-wrap">
   <div class="filters-inner">
-    <span class="filter-label">Día de rutina</span>
+    <span class="filter-label">Sesión</span>
     <div class="filter-group" id="filter-level">
-      <div class="chip active" data-group="level" data-val="all">Todos los días</div>
+      <div class="chip active" data-group="level" data-val="all" role="button" tabindex="0">Todas</div>
     </div>
   </div>
 </div>
-
 <div class="grid-wrap">
   <p class="grid-meta" id="grid-meta"></p>
   <div class="grid" id="grid">
     <p class="skeleton-note">Cargando tu progreso guardado…</p>
   </div>
 </div>
-
 <div class="overlay" id="overlay">
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-header">
@@ -364,175 +599,561 @@
     </div>
   </div>
 </div>
-
+<div class="video-popup-wrap" id="video-popup-wrap">
+  <div class="video-popup">
+    <div class="video-popup-header">
+      <span>Técnica del ejercicio</span>
+      <button class="video-popup-close" id="video-popup-close" aria-label="Cerrar video">&#x2715;</button>
+    </div>
+    <div class="video-popup-frame">
+      <iframe id="video-popup-iframe" src="" title="Video técnica de ejercicio" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="video-popup-fallback">¿No carga? <a id="video-popup-fallback-link" href="#" target="_blank" rel="noopener">Abrilo en YouTube ↗</a></div>
+  </div>
+</div>
 <script>
+/* ============================================================
+   CONFIGURACIÓN DE LA ALUMNA
+   ============================================================ */
 const ATHLETE_CONFIG = {
   name: "Virginia Gomez Omil",
-  objective: "Estabilización de Presión Arterial (HIIT) & Acondicionamiento Físico",
-  levelBadge: "Fuerza & HIIT Adaptado",
-  specialCare: "Monitoreo estricto del dolor lumbar residual: bajo ninguna circunstancia se permite cizallamiento vertebral o flexión espinal bajo carga. Respiración continua y fluida para evitar respuestas presoras exageradas durante los picos HIIT y esfuerzos excéntricos. Placa de osteosíntesis en el metatarso del quinto dedo (meñique) del pie, colocada hace 3 años: evitar impacto directo, saltos con aterrizaje lateral o apoyo inestable sobre el borde externo del pie. En ejercicios con componente de salto (ej. Jumping Pull-ups), priorizar siempre la variante controlada sin despegue de ambos pies del suelo, y usar calzado con buena sujeción y amortiguación lateral."
+  objective: "Recomposición Corporal Segura — Glúteo/Pierna, Torso Estético y Core (+50 años)",
+  levelBadge: "Fase de Hipertrofia Adaptada — 5 sesiones/semana",
+  specialCareHtml: "Alumna +50 años. <b>1) Lumbar:</b> cero flexión/cizallamiento espinal bajo carga — sin giros con peso, sin peso muerto libre pesado, sin sentadilla trasera pesada ni buenos días; prioridad a bisagras de cadera en máquina/polea con apoyo torácico y core anti-extensión/anti-rotación. <b>2) Respiratorio:</b> exhalación en el esfuerzo, inhalación en la excéntrica, en TODO momento — Maniobra de Valsalva estrictamente prohibida, en fuerza y especialmente en los picos de HIIT. <b>3) Pie (placa 5º metatarso, hace 3 años):</b> cero impacto directo ni aterrizaje lateral — todo ejercicio con apoyo bipodal constante, calzado con buena sujeción obligatorio."
 };
 document.getElementById('student-name-text').textContent = ATHLETE_CONFIG.name;
 document.getElementById('student-objective-text').textContent = ATHLETE_CONFIG.objective;
 document.getElementById('nav-badge-level').textContent = ATHLETE_CONFIG.levelBadge;
-document.getElementById('student-injury-text').textContent = ATHLETE_CONFIG.specialCare;
-
+document.getElementById('student-injury-text').innerHTML = ATHLETE_CONFIG.specialCareHtml;
+/* ============================================================
+   DATOS DE LAS SESIONES
+   Cada sesión se suma acá una vez aprobada en la Fase 1 (texto).
+   ============================================================ */
 const workouts = [
   {
-    id: "dia-1",
-    title: "DÍA 1 – Potencia de Hombro, Tracc./Empuje & HIIT",
-    subtitle: "Activación Core & Trabajo en Isometría Excéntrica",
-    discipline: "Fuerza-HIIT",
+    id: "dia1-gluteo-femoral",
+    title: "DÍA 1 — GLÚTEO / FEMORALES",
+    subtitle: "Bisagra de Cadera e Isquiotibiales-Dominante",
+    discipline: "Hipertrofia Segura — Glúteo y Pierna",
     level: "Día 1",
-    levelSlug: "Día_1",
-    desc: "Bloque de hombros con tiempo bajo tensión constante e intervalos anaeróbicos de alta demanda hemodinámica.",
+    levelSlug: "dia1",
+    desc: "Hip Thrust con apoyo torácico y Cable RDL como ejes, biset unilateral de isquiotibiales, triset de glúteo medio y gemelo, cierre de HIIT bajo impacto.",
+    duration: { base: 60, full: 75 },
+    safetyAlerts: [
+      "Peso Muerto Rumano con Barra Libre sustituido por Cable RDL + Curl de Isquiotibiales Tumbado en Máquina: mismo estímulo de isquiotibiales, sin la carga axial libre de una bisagra sin guía mecánica.",
+      "Ningún ejercicio de esta sesión requiere despegue de ambos pies del suelo — protección constante del 5º metatarso.",
+      "RPE tope 7-8 en todos los bloques de fuerza (nunca al fallo) para mantener el control respiratorio y evitar picos de presión arterial."
+    ],
     warmup: [
-      { name: "Halos con Disco", sub: "Movilización controlada multiarticular de la cintura escapular. Mantener el abdomen completamente tenso bloqueando balanceos lumbares.", reps: "3 series x 7/7 rep.", detail: "<b>Carga:</b> Liviana" },
-      { name: "Press Frontal con Disco", sub: "Empuje lineal activo. Extender al frente a la altura del pecho superior y regresar resistiendo de forma consciente.", reps: "3 series x 10 rep.", detail: "<b>Ritmo:</b> Controlado" },
-      { name: "Plancha Abdominal Estática", sub: "Co-contracción profunda del core. Mantener la alineación perfecta de talones, pelvis y cabeza. No permitir curvatura lumbar.", reps: "3 series x 10 segundos", detail: "<b>Pausa:</b> 30s" }
+      { name: "El Mejor Estiramiento del Mundo (World's Greatest Stretch)", reps: "5 rep/lado", yt: "-CiWQ2IvY34" },
+      { name: "Fire Hydrants con Banda (Banded Fire Hydrants)", reps: "2x12/lado", yt: "JUBtuuhPdggg" },
+      { name: "Sentadilla Isométrica Media con Abducción de Banda", reps: "2x30s, banda liviana", yt: "4QHr6xPHKQE" }
     ],
     main: [
-      { name: "Vuelos Laterales con Mancuerna — Pirámide de Tensión", sub: "Estímulo del deltoides medio en plano escapular anatómico.<br>• <b>Set 1:</b> 20 repeticiones livianas + 20-30s plancha abdominal.<br>• <b>Set 2:</b> 15 repeticiones con carga intermedia + 20-30s plancha abdominal.<br>• <b>Set 3:</b> 10 repeticiones semipesadas + 20-30s plancha abdominal.", reps: "2 a 3 sets completos", detail: "<b>Descanso:</b> 2 min" },
-      { name: "Superset Antagonista: Brazos en Tensión Continua", sub: "<b>1. Curl de Bíceps Supino con Rotación:</b> iniciar en agarre neutro y supinar al subir de forma estricta.<br><b>2. Extensión de Tríceps con Cuerda:</b> codos fijos a los costados, abrir la cuerda abajo bloqueando el rango.", reps: "21-15-9 repeticiones", detail: "<b>Evolución:</b> Liv-Int-Pes<br>Rest: 90s" },
-      { name: "Press de Hombro Isométrico Over-Head (10 a 1)", sub: "Un brazo se sostiene bloqueado estáticamente en extensión completa mientras el brazo contralateral ejecuta el recorrido concéntrico y excéntrico. Alternar de forma inmediata descendiendo desde 10 repeticiones hasta 1.", reps: "1 serie global (10 a 1)", detail: "<b>Time Cap:</b> 10 min<br>Carga estable" }
+      {
+        title: "Bloque 1 — Hip Thrust con Barra",
+        format: "straight",
+        restSeconds: 120,
+        tips: "Apoyo torácico completo en el banco. Costillas abajo (evitar hiperextensión lumbar en el punto alto), empuje a través del talón, contracción de glúteo consciente con pausa de 1s arriba. Exhalar al subir la cadera, inhalar al bajar — respiración continua, sin bloquear el aire.",
+        objetivo: "Tensión mecánica en glúteo mayor con el máximo soporte de espalda disponible — ejercicio ancla del día, seguro para columna.",
+        sensacion: "Contracción máxima de glúteo en el punto alto. Si sentís la zona lumbar como protagonista, la cadera probablemente no llegó a extensión completa o las costillas se despegaron.",
+        exercises: [
+          { name: "Hip Thrust con Barra", yt: "CvuVYMFd11g", sets: 3, reps: "3x8-10", tempo: "2021", rpe: "RPE 7-8" }
+        ]
+      },
+      {
+        title: "Bloque 2 — Cable RDL + Curl de Isquiotibiales Tumbado",
+        format: "biset",
+        restSeconds: 90,
+        tips: "🛡️ Variante segura del RDL libre: la resistencia de la polea guía el recorrido y permite mantener la columna neutra sin exigir estabilización de una barra libre. La cadera se retrae hacia atrás, no hacia abajo. Exhalar al extender la cadera. En el curl, la cadera permanece pegada al apoyo en todo momento.",
+        objetivo: "Isquiotibiales bajo estiramiento controlado, con la columna protegida por el recorrido guiado de la polea.",
+        sensacion: "Estiramiento fuerte y controlado en los isquiotibiales, sin ninguna sensación en la zona baja de la espalda.",
+        exercises: [
+          { label: "A1", name: "Peso Muerto Rumano en Polea Baja (Cable RDL)", sets: 3, reps: "3x10-12", tempo: "3110", rpe: "RPE 7" },
+          { label: "A2", name: "Curl de Isquiotibiales Tumbado en Máquina", yt: "lGNeJsdqJwg", sets: 3, reps: "3x10-12", tempo: "3110", rpe: "RPE 7" }
+        ]
+      },
+      {
+        title: "Bloque 3 — Búlgara + Curl de Isquiotibiales de Pie",
+        format: "biset",
+        restSeconds: 105,
+        tips: "Apoyo firme de ambos pies (la pierna de atrás es solo apoyo, sin balanceo ni torsión de tobillo). Calzado con buena sujeción obligatorio. Exhalar en la subida de la búlgara, inhalar en la bajada.",
+        objetivo: "Trabajo unilateral para simetría de fuerza entre ambas piernas, con foco en glúteo/cuádriceps de la pierna delantera.",
+        sensacion: "En la búlgara, el 90% del trabajo debe sentirse en la pierna delantera. En el curl, ardor localizado y progresivo en el isquiotibial, sin ayuda de balanceo.",
+        exercises: [
+          { label: "A1", name: "Sentadilla Búlgara con Mancuernas", yt: "or1frhkjBDc", sets: 3, reps: "3x8-10/pierna", tempo: "3110", rpe: "RPE 7-8" },
+          { label: "A2", name: "Curl de Isquiotibiales de Pie a Una Pierna en Máquina", yt: "UssXN7SnOHw", sets: 3, reps: "3x10-12/pierna", tempo: "3110" }
+        ]
+      },
+      {
+        title: "Bloque 4 — Glúteo Medio + Aislamiento de Glúteo + Gemelo",
+        format: "triset",
+        restSeconds: 80,
+        tips: "En la abducción, torso inclinado adelante para aislar mejor el glúteo medio. En el kickback, la pelvis permanece fija — el movimiento nace de la cadera, no de la zona lumbar. En la elevación de talón, pausa real en el estiramiento antes de subir.",
+        objetivo: "Cierre de glúteo medio/mínimo y gemelo con máquinas totalmente guiadas — cero exigencia de estabilización espinal.",
+        sensacion: "En la abducción, sensación en el costado de la cadera. En el kickback, foco total en la extensión de cadera, sin compensar con la espalda baja.",
+        exercises: [
+          { label: "A1", name: "Abducción de Cadera en Máquina Inclinado Adelante", yt: "rfm_mExk_Fc", sets: 3, reps: "3x15", tempo: "2020" },
+          { label: "A2", name: "Kickback en Polea Apoyado en Banco", yt: "nt-PY7VaI_c", sets: 3, reps: "3x12-15/lado", tempo: "2020" },
+          { label: "A3", name: "Elevación de Talones en Prensa de Piernas", yt: "1cvpm--Y-4I", sets: 3, reps: "3x12-15", tempo: "2111" }
+        ]
+      }
     ],
-    metcon: [
-      { name: "HIIT Cardiovascular & Bloque de Potencia Dinámica (10 a 1)", sub: "Estructura descendente de alta intensidad metabólica para control y estimulación endotelial de la PA.<br>• <b>Calorías en Assault Bike:</b> esprintar con potencia decreciente (10 a 1).<br>• <b>Bloque variado de mancuernas según la semana de progresión:</b><br>&nbsp;&nbsp;- <i>Semana 1:</i> DB Snatch unilateral (alternado).<br>&nbsp;&nbsp;- <i>Semana 2:</i> Dual DB Push Press.<br>&nbsp;&nbsp;- <i>Semana 3:</i> Dual DB Snatch corporal.<br>&nbsp;&nbsp;- <i>Semana 4 (descarga):</i> 3 min de caminata intensa en cinta entre sets de fuerza.", reps: "1 bloque (10 a 1)", detail: "<b>Intensidad:</b> Alta<br>RPE: 8-9" },
-      { name: "Corework Analítico: Crunches Cortos", sub: "Flexión torácica controlada despegando escápulas del suelo. Mantener la zona lumbar totalmente pegada y apoyada en la colchoneta.", reps: "50 - 35 - 15 reps", detail: "<b>Descanso:</b> Mínimo" }
-    ],
-    technicalAnalysis: {
-      objectives: "Maximizar el gasto energético metabólico mediante intervalos anaeróbicos controlados, manteniendo la musculatura del hombro bajo una alta densidad de estímulo tensional sin sobrecargar la columna vertebral.",
-      tips: "En el Press de Hombro 10 a 1, la contracción del brazo estático requiere una respiración diafragmática continua; jamás retengas el aire (no realices Valsalva) para evitar picos de presión intraocular o arterial.",
-      strategies: "La transición al core en el suelo bloquea el movimiento espinal, protegiendo la espalda baja de la fatiga acumulada producida por la Assault Bike."
-    }
-  },
-  {
-    id: "dia-2",
-    title: "DÍA 2 – Cadena Posterior, Dominio de Cadera & EMOM",
-    subtitle: "Densidad de Tren Inferior & Estabilidad Lumbar",
-    discipline: "Fuerza-HIIT",
-    level: "Día 2",
-    levelSlug: "Día_2",
-    desc: "Estímulo de cuádriceps, glúteos e isquiosurales priorizando vectores estables y acondicionamiento cardiovascular escalonado.",
-    warmup: [
-      { name: "Cardio Base Progresivo", sub: "Aumento controlado de la temperatura corporal, lubricación sinovial e incremento de la frecuencia cardíaca basal en plano seguro.", reps: "5 minutos", detail: "<b>Cinta o bici</b>" }
-    ],
-    main: [
-      { name: "AMRAP de Volumen Acumulado (Asentamiento de Carga)", sub: "Ejecutar la secuencia ascendente (3-6-9-12-15…) de forma continua. Mantener la verticalidad lumbar.<br>• <b>Goblet Squat:</b> mancuerna/KB pegada estrictamente al pecho.<br>• <b>Russian Kettlebell Swings:</b> bisagra de cadera pura, empuje potente de glúteos.<br>• <i>Cargas por semana:</i> Sem 1 (8/10kg) | Sem 2 (10/12kg) | Sem 3 (10/14kg) | Sem 4 (sentadilla libre / KB 10kg swings).", reps: "AMRAP 10 minutos", detail: "<b>Ritmo:</b> Constante<br>RPE: 7" },
-      { name: "Superset de Aislamiento de Cuádriceps", sub: "<b>1. Curl de Cuádriceps en Sillón:</b> extensión estricta bloqueando un segundo en contracción máxima (20-15-10, de liviano a semipesado).<br><b>2. Wall Sit (Sentadilla Isométrica en Pared):</b> apoyar toda la columna de forma plana contra la pared, manteniendo flexión de rodillas a 90 grados.", reps: "3 supersets", detail: "<b>Wall Sit:</b> 20-30s<br>Pausa final: 2 min" },
-      { name: "Hip Thrust Estructural (Barra o Máquina Específica)", sub: "Máxima activación del glúteo mayor sin carga de compresión en columna lumbar. Contraer glúteos arriba de forma consciente.<br>• <i>Nota técnica:</i> al final de cada set, realizar un sostén isométrico de 10 segundos seguido de 10-20 segundos de repeticiones parciales bombeadas (suprimir estas parciales en la Semana 4).", reps: "4 sets: 10-8-6-6", detail: "<b>Evolutivo</b><br>Descanso: 90s" }
-    ],
-    metcon: [
-      { name: "EMOM Miocárdico Intervalado (Acondicionamiento HIIT)", sub: "Control estricto de la intensidad cardíaca por minutos en bicicleta fija.<br>• <b>Minuto 1:</b> 40 segundos de pedaleo controlado (RPE 6).<br>• <b>Minuto 2:</b> 30 segundos de pedaleo intenso de potencia (RPE 7.5).<br>• <b>Minuto 3:</b> 20 segundos de pedaleo a máxima velocidad funcional (RPE 9).<br>• <b>Minuto 4:</b> pedaleo muy suave de recuperación y lavado de lactato.", reps: "16 minutos totales", detail: "<b>4 vueltas</b><br>Estrategia HIIT" },
-      { name: "Corework & Antirrotación Pélvica", sub: "<b>1. Mixed Carry (Farmer / Front Rack):</b> caminar sosteniendo una carga a un lado colgada y en el otro brazo en posición de rack. Alternar brazos a los 10 metros.<br><b>2. Rodillas al Pecho en Soporte:</b> flexión de cadera en banco romano o paralelas estables.", reps: "3 series activas", detail: "<b>Carry:</b> 10+10m<br>Rodillas: 10-15 rep" }
-    ],
-    technicalAnalysis: {
-      objectives: "Generar un estímulo hipertrófico y de fuerza en los extensores de cadera y rodilla sin comprimir los discos intervertebrales, seguido de un HIIT en bicicleta que eleve la elasticidad arterial.",
-      tips: "En el Wall Sit, empujá la zona lumbar firmemente contra la pared para anular cualquier espacio en la espalda baja; esto recluta de forma refleja el transverso abdominal.",
-      strategies: "El uso del EMOM en bicicleta fija elimina por completo el impacto articular, permitiendo alcanzar un RPE 9 de forma segura y controlada para el sistema cardiovascular."
-    }
-  },
-  {
-    id: "dia-3",
-    title: "DÍA 3 – Fuerza de Tracción Superior, Dorsal & Brazos",
-    subtitle: "Descompresión Vertebral & Densidad Metabólica",
-    discipline: "Fuerza-HIIT",
-    level: "Día 3",
-    levelSlug: "Día_3",
-    desc: "Énfasis en la cadena muscular de tracción posterior, tracciones verticales adaptadas y empujes horizontales estables.",
-    warmup: [
-      { name: "Remo en Máquina de Resistencia Fluida", sub: "Activación sistémica cardiovascular coordinando el empuje de piernas y tracción de brazos sin flexionar o redondear la columna en el fondo.", reps: "5 minutos", detail: "<b>Ritmo:</b> Progresivo" },
-      { name: "EMOM de Tracción Vertical Escalonada", sub: "Australian Pull-ups o Jumping Pull-ups controlados asistidos.<br>• <i>Dinámica:</i> iniciar con 3 repeticiones en el minuto 1 e incrementar una repetición por cada minuto transcurrido hasta llegar al fallo técnico o completar el tiempo.", reps: "EMOM 'X' minutos", detail: "<b>Fallo técnico</b>" }
-    ],
-    main: [
-      { name: "Secuencia Combinada de Tracción Horizontal & Brazos", sub: "Estímulo de la densidad dorsal y flexores del codo de forma aislada.<br>• <b>Remo Sentado en Máquina Articulada:</b> realizar rotación de agarre prono a supino al traccionar de forma estricta.<br>• <b>Bíceps Martillo con Mancuerna:</b> agarre neutro constante protegiendo las muñecas.", reps: "21 - 15 - 9 reps", detail: "<b>Cargas:</b> Liv-Int-Semi<br>Rest: 90s" },
-      { name: "EMOM Estructural de Tracción Combinada", sub: "<b>Minuto 1:</b> sostén isométrico en el punto máximo de la tracción de una Australian Pull-up (pecho tocando la barra/anillas).<br><b>2. Dumbbell Bent Over Row:</b> remo inclinado con mancuernas manteniendo rodillas flexionadas y la espalda plana fija en 45 grados.", reps: "8 minutos totales", detail: "<b>Sostén:</b> 20-30s<br>Remo: 10-15 rep" }
-    ],
-    metcon: [
-      { name: "Intervalos de Empuje Estabilizado en Banco", sub: "Dinámica por tiempos de máxima fatiga controlada localizada.<br>• Ejecutar 10 repeticiones de Press de Pecho Inclinado con Mancuernas (vector amigable para hombros).<br>• En el tiempo restante de los 2 minutos, realizar la máxima cantidad posible (AMRAP) de Fondos en Banca (Bench Dips) controlando la extensión del codo.", reps: "4 a 5 sets totales", detail: "<b>Trabajo:</b> 2 min ON<br>Descanso: 1 min" },
-      { name: "HIIT Metabólico Dual (Upper Body Focus)", sub: "Bloque de alta exigencia de la FC con nula afectación del complejo lumbopélvico.<br>• <b>Minuto 1:</b> 30-40s de máquina de remo a máxima potencia funcional.<br>• <b>Minuto 2:</b> 30-40s de Assault Bike utilizando estrictamente solo los brazos.", reps: "10 a 16 minutos", detail: "<b>RPE objetivo:</b> 8<br>Estímulo HIIT" }
-    ],
-    technicalAnalysis: {
-      objectives: "Desarrollar la musculatura escapular y del dorsal ancho para mejorar la postura y la descompresión lumbar, integrando picos de estimulación miocárdica mediante ergómetros de tren superior.",
-      tips: "En el Remo con Mancuernas Inclinado (Bent Over Row), si sentís el más mínimo cansancio o tensión en la espalda baja, pasá inmediatamente a ejecutarlo apoyando el pecho en un banco inclinado.",
-      strategies: "El bloque metabólico final divide el esfuerzo en remo y bici de brazos; al suprimir las piernas, se anula la fatiga de estabilización inferior, blindando la zona lumbopélvica."
-    }
-  },
-  {
-    id: "dia-4",
-    title: "DÍA 4 – Estímulo de Cadera, Cadena Posterior & Tracción Axial",
-    subtitle: "Fuerza de Tracción Segura & Estabilidad de Rodilla",
-    discipline: "Fuerza-HIIT",
-    level: "Día 4",
-    levelSlug: "Día_4",
-    desc: "Patrón de tracción inferior controlado por volumen de tiempo y aislamiento lumbopélvico en poleas de tensión.",
-    warmup: [
-      { name: "Acondicionamiento Progresivo en Remo", sub: "Incremento escalonado de las revoluciones cardíacas y preparación neuromuscular para los patrones de tracción inferior.", reps: "5 a 10 minutos", detail: "<b>Intensidad:</b> Progresiva" },
-      { name: "EMOM de Peso Muerto con Barra Hexagonal (Hex Bar)", sub: "Patrón de bisagra de cadera puro optimizado. La barra hexagonal distribuye la carga sobre el centro de gravedad del cuerpo, minimizando la palanca lumbar.<br>• <i>Dinámica:</i> realizar 3 repeticiones fijas agregando una repetición extra por cada minuto transcurrido.", reps: "EMOM 'X' minutos", detail: "<b>RPE máximo:</b> 6-7<br>Técnica estricta" }
-    ],
-    main: [
-      { name: "Superset Estructural de Cadena Posterior Alta", sub: "<b>1. Curl Isquiosural Unilateral en Sillón:</b> flexión estricta de rodilla aislando los isquiotibiales (15 repeticiones por pierna).<br><b>2. Floor Barbell Hip Thrust:</b> elevación de cadera acostada en el suelo con barra acolchada sobre la pelvis, marcando una pausa obligatoria de un segundo arriba.", reps: "3 a 4 sets", detail: "<b>Hip Thrust:</b> 15-20 rep<br>Descanso: 1:30 min" },
-      { name: "Bloque de Tensión Constante e Isometría Dinámica", sub: "<b>1. Curl Femoral Acostada en Máquina:</b> flexión bilateral controlando al máximo la fase excéntrica del movimiento (21-15-9 repeticiones).<br><b>2. Glute Bridge Isométrico sobre Fitball:</b> sostener la cadera elevada con los talones firmes clavados sobre la pelota de estabilidad.", reps: "3 sets de trabajo", detail: "<b>Fitball hold:</b> 10-15s<br>Descanso: 1:30 min" }
-    ],
-    metcon: [
-      { name: "Superset de Aislamiento Lumbar-Glúteo en Polea", sub: "Ejercicios finales de bombeo metabólico funcional sin carga compresiva vertical.<br>• <b>Cable Pull Through:</b> de espaldas a la polea baja, traccionar el cable mediante la extensión de cadera, manteniendo el core rígido.<br>• <b>Patadas de Glúteo en Polea Baja:</b> extensión unilateral lineal hacia atrás controlando el retorno en series descendentes continuas.", reps: "3 sets totales", detail: "<b>Pull Through:</b> 15 rep<br>Patadas: 15 x lado" }
+    hiit: {
+      title: "HIIT / Cardio Metabólico Controlado",
+      rounds: 8,
+      workSeconds: 30,
+      restSeconds: 30,
+      stations: ["Bici Estática / Airbike", "Remo en Ergómetro"],
+      tips: "Respiración continua obligatoria — exhalar en cada ciclo de pedaleo/remada, jamás retener el aire buscando \"empujar más fuerte\". Si no hay bici ni remo disponibles: reemplazar por marcha rápida en el lugar con elevación de rodilla controlada (sin salto) o step-ups lentos, siempre con apoyo bipodal constante.",
+      objetivo: "Estímulo metabólico/cardiovascular controlado y de bajo impacto para cerrar la sesión, según indicación médica.",
+      sensacion: "Esfuerzo cardiovascular elevado pero conversacional al final de cada bloque de trabajo — nunca al máximo posible."
+    },
+    cooldown: [
+      "Estiramiento de glúteo tipo figura 4 — 30s/lado",
+      "Estiramiento de isquiotibiales sentado — 30s/lado",
+      "Estiramiento de cuádriceps de pie — 30s/lado",
+      "Estiramiento de gemelo en pared — 30s/lado",
+      "Vuelta a la calma respiratoria post-HIIT: 1-2 min de respiración diafragmática lenta (inhalar 4s por nariz, exhalar 6s por boca)"
     ],
     technicalAnalysis: {
-      objectives: "Fortalecer de forma óptima los glúteos y los isquiotibiales (cadena posterior) para generar un soporte activo que proteja la espalda baja, suprimiendo vectores verticales de compresión axial.",
-      tips: "En el Peso Muerto con Barra Hexagonal, mantené el pecho arriba y descendé la cadera de forma coordinada; no permitas que tus hombros caigan por debajo de la línea de la pelvis en el inicio.",
-      strategies: "El uso de poleas bajas y la posición acostada en el suelo para el Hip Thrust eliminan por completo la carga negativa sobre los discos lumbares dañados, aislando el grupo muscular objetivo."
+      objectives: "Bisagra de cadera y extensión de cadera (glúteo/isquiotibiales) como eje del día, 100% en formato máquina/polea/apoyo torácico, con glúteo medio y gemelo como cierre.",
+      tips: "Los dos primeros bloques van con foco en control de tempo y RPE 7-8; a partir del Bloque 3 se usa biset/triset para ganar densidad sin perder calidad de ejecución ni comprometer la respiración.",
+      strategies: "24 series efectivas de fuerza en los 4 bloques principales. Cero ejercicios de bisagra libre sin guía. Cero impacto o despegue bipodal en toda la sesión, incluyendo el bloque HIIT final."
     }
   }
 ];
-
-// ---- State ----
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
 let completedWorkouts = [];
+let completedSets = {};
 let currentWeek = 1;
+let currentMode = 'con-hiit';
 let lastFocusedElement = null;
-const STORAGE_KEY_COMPLETED = 'jp_completed_workouts';
-const STORAGE_KEY_WEEK = 'jp_current_week';
-
-// ---- Storage helpers (persists across sessions, private to this user) ----
+const STORAGE_KEY_COMPLETED = 'virginia_completed_workouts_v1';
+const STORAGE_KEY_SETS = 'virginia_completed_sets_v1';
+const STORAGE_KEY_WEEK = 'virginia_current_week_v1';
+const STORAGE_KEY_MODE = 'virginia_mode_v1';
+/* ============================================================
+   TIMERS: cuenta regresiva por bloque + pantalla siempre
+   encendida mientras corren
+   ============================================================ */
+let wakeLockRef = null;
+let activeTimersCount = 0;
+const timerIntervals = new Map();
+async function acquireWakeLock() {
+  if (wakeLockRef) return;
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLockRef = await navigator.wakeLock.request('screen');
+      wakeLockRef.addEventListener('release', () => { wakeLockRef = null; });
+    }
+  } catch (e) { /* no soportado o permiso denegado */ }
+}
+async function releaseWakeLockIfIdle() {
+  if (activeTimersCount <= 0 && wakeLockRef) {
+    try { await wakeLockRef.release(); } catch (e) { /* noop */ }
+    wakeLockRef = null;
+  }
+}
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && activeTimersCount > 0) {
+    await acquireWakeLock();
+  }
+});
+function formatTime(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+function updateTimerDisplay(el, seconds) {
+  const display = el.querySelector('.ex-timer-display');
+  if (display) display.textContent = formatTime(seconds);
+}
+function playTimerBeep(freq) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq || 880;
+    gain.gain.setValueAtTime(0.16, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+    osc.onended = () => ctx.close();
+  } catch (e) { /* noop */ }
+}
+async function startExTimer(el) {
+  el.dataset.running = '1';
+  el.classList.add('running');
+  el.classList.remove('done');
+  const btn = el.querySelector('.ex-timer-toggle');
+  if (btn) { btn.textContent = '❚❚'; btn.setAttribute('aria-label', 'Pausar temporizador'); }
+  activeTimersCount++;
+  await acquireWakeLock();
+  const interval = setInterval(() => {
+    let remaining = parseInt(el.dataset.remaining, 10) - 1;
+    if (remaining <= 0) {
+      el.dataset.remaining = '0';
+      updateTimerDisplay(el, 0);
+      finishExTimer(el);
+      return;
+    }
+    el.dataset.remaining = String(remaining);
+    updateTimerDisplay(el, remaining);
+  }, 1000);
+  timerIntervals.set(el, interval);
+}
+function pauseExTimer(el) {
+  el.dataset.running = '0';
+  el.classList.remove('running');
+  const btn = el.querySelector('.ex-timer-toggle');
+  if (btn) { btn.textContent = '▶'; btn.setAttribute('aria-label', 'Iniciar temporizador'); }
+  const interval = timerIntervals.get(el);
+  if (interval) { clearInterval(interval); timerIntervals.delete(el); }
+  activeTimersCount = Math.max(0, activeTimersCount - 1);
+  releaseWakeLockIfIdle();
+}
+function finishExTimer(el) {
+  const interval = timerIntervals.get(el);
+  if (interval) { clearInterval(interval); timerIntervals.delete(el); }
+  el.dataset.running = '0';
+  el.classList.remove('running');
+  el.classList.add('done');
+  const btn = el.querySelector('.ex-timer-toggle');
+  if (btn) { btn.textContent = '▶'; btn.setAttribute('aria-label', 'Iniciar temporizador'); }
+  activeTimersCount = Math.max(0, activeTimersCount - 1);
+  releaseWakeLockIfIdle();
+  playTimerBeep(880);
+  if (navigator.vibrate) { try { navigator.vibrate([200, 100, 200]); } catch (e) { /* noop */ } }
+}
+function resetExTimer(el) {
+  pauseExTimer(el);
+  const total = parseInt(el.dataset.seconds, 10);
+  el.dataset.remaining = String(total);
+  updateTimerDisplay(el, total);
+  el.classList.remove('done');
+}
+function toggleExTimer(el) {
+  if (el.dataset.running === '1') { pauseExTimer(el); } else { startExTimer(el); }
+}
+function clearAllExTimers() {
+  timerIntervals.forEach((interval) => clearInterval(interval));
+  timerIntervals.clear();
+  activeTimersCount = 0;
+  releaseWakeLockIfIdle();
+}
+function renderTimerWidget(timer) {
+  if (!timer || !timer.seconds) return '';
+  const isWork = timer.type === 'work';
+  const label = isWork ? (timer.label || 'Trabajo') : 'Descanso';
+  const cls = isWork ? 'work' : 'rest';
+  return `
+    <div class="ex-timer ${cls}" data-seconds="${timer.seconds}" data-remaining="${timer.seconds}" data-running="0">
+      <div class="ex-timer-tag">${label}</div>
+      <div class="ex-timer-display">${formatTime(timer.seconds)}</div>
+      <div class="ex-timer-controls">
+        <button type="button" class="ex-timer-btn ex-timer-toggle" aria-label="Iniciar temporizador">▶</button>
+        <button type="button" class="ex-timer-btn ex-timer-reset" aria-label="Reiniciar temporizador">↺</button>
+      </div>
+    </div>`;
+}
+/* ============================================================
+   TEMPO — decodifica notación de 4 dígitos (excéntrica-pausa-
+   concéntrica-pausa) a texto explicativo
+   ============================================================ */
+function decodeTempo(tempo) {
+  if (!tempo) return '';
+  const chars = tempo.trim().split('');
+  if (chars.length < 4) return '';
+  const labels = ['Excéntrica (bajada)', 'Pausa abajo', 'Concéntrica (subida)', 'Pausa arriba'];
+  const parts = chars.slice(0, 4).map((c, i) => {
+    const val = c.toUpperCase() === 'X' ? 'explosivo, máx. velocidad' : c + 's';
+    return `${labels[i]}: ${val}`;
+  });
+  return parts.join(' · ');
+}
+function renderTempoNote(tempo) {
+  if (!tempo) return '';
+  const decoded = decodeTempo(tempo);
+  if (!decoded) return '';
+  return `<div class="tempo-note">⏱ Tempo ${tempo} — ${decoded}</div>`;
+}
+document.getElementById('modal-exercises-content').addEventListener('click', (e) => {
+  const toggleBtn = e.target.closest('.ex-timer-toggle');
+  const resetBtn = e.target.closest('.ex-timer-reset');
+  const setBtn = e.target.closest('.set-check');
+  const hiitToggle = e.target.closest('.hiit-toggle');
+  const hiitReset = e.target.closest('.hiit-reset');
+  if (toggleBtn) {
+    e.stopPropagation();
+    toggleExTimer(toggleBtn.closest('.ex-timer'));
+  } else if (resetBtn) {
+    e.stopPropagation();
+    resetExTimer(resetBtn.closest('.ex-timer'));
+  } else if (setBtn) {
+    e.stopPropagation();
+    toggleSetCheck(setBtn);
+  } else if (hiitToggle) {
+    e.stopPropagation();
+    toggleHiitTimer(hiitToggle.closest('.hiit-timer'));
+  } else if (hiitReset) {
+    e.stopPropagation();
+    resetHiitTimer(hiitReset.closest('.hiit-timer'));
+  }
+});
+/* ============================================================
+   CHECKBOXES DE SERIES / RONDAS
+   ============================================================ */
+function renderSetChecks(key, sets) {
+  if (!sets) return '';
+  let html = '<div class="set-checks">';
+  for (let i = 0; i < sets; i++) {
+    const full = key + '-s' + i;
+    const done = completedSets[full] ? 'done' : '';
+    html += `<button type="button" class="set-check ${done}" data-key="${full}" aria-label="Serie ${i + 1}">${i + 1}</button>`;
+  }
+  html += '</div>';
+  return html;
+}
+async function toggleSetCheck(btn) {
+  const key = btn.getAttribute('data-key');
+  if (completedSets[key]) {
+    delete completedSets[key];
+    btn.classList.remove('done');
+  } else {
+    completedSets[key] = true;
+    btn.classList.add('done');
+  }
+  await saveSetChecks();
+  updateBlockCompletionBadge(btn.closest('.group-block') || btn.closest('.block'));
+}
+function updateBlockCompletionBadge(container) {
+  if (!container) return;
+  const checks = container.querySelectorAll('.set-check');
+  if (!checks.length) return;
+  const allDone = Array.from(checks).every((c) => c.classList.contains('done'));
+  container.classList.toggle('block-complete', allDone);
+}
+function refreshAllBlockBadges() {
+  document.querySelectorAll('.group-block, #modal-exercises-content > .block').forEach((container) => {
+    updateBlockCompletionBadge(container);
+  });
+}
+/* ============================================================
+   TEMPORIZADOR DE INTERVALOS HIIT (auto-ciclado trabajo/descanso)
+   ============================================================ */
+function hiitStationFor(el) {
+  const stations = JSON.parse(el.dataset.stations || '[]');
+  if (!stations.length) return '';
+  const round = parseInt(el.dataset.round, 10);
+  return stations[(round - 1) % stations.length];
+}
+function updateHiitUI(el) {
+  const remaining = parseInt(el.dataset.remaining, 10);
+  const round = parseInt(el.dataset.round, 10);
+  const rounds = parseInt(el.dataset.rounds, 10);
+  const phase = el.dataset.phase;
+  el.querySelector('.hiit-display').textContent = formatTime(remaining);
+  el.querySelector('.hiit-round-label').textContent = `Ronda ${round} / ${rounds}`;
+  el.querySelector('.hiit-phase-label').textContent = phase === 'work' ? '💪 Trabajo' : '😮‍💨 Descanso';
+  el.classList.toggle('phase-work', phase === 'work');
+  const stationEl = el.querySelector('.hiit-station-label');
+  if (stationEl) stationEl.textContent = phase === 'work' ? hiitStationFor(el) : 'Respiración continua — sin retener el aire';
+}
+async function startHiitTimer(el) {
+  el.dataset.running = '1';
+  el.classList.add('running');
+  el.classList.remove('finished');
+  const btn = el.querySelector('.hiit-toggle');
+  if (btn) { btn.textContent = '❚❚ Pausar'; }
+  activeTimersCount++;
+  await acquireWakeLock();
+  const interval = setInterval(() => {
+    let remaining = parseInt(el.dataset.remaining, 10) - 1;
+    if (remaining <= 0) {
+      advanceHiitPhase(el);
+      return;
+    }
+    el.dataset.remaining = String(remaining);
+    updateHiitUI(el);
+  }, 1000);
+  timerIntervals.set(el, interval);
+}
+function advanceHiitPhase(el) {
+  const phase = el.dataset.phase;
+  const round = parseInt(el.dataset.round, 10);
+  const rounds = parseInt(el.dataset.rounds, 10);
+  playTimerBeep(phase === 'work' ? 660 : 990);
+  if (navigator.vibrate) { try { navigator.vibrate(150); } catch (e) { /* noop */ } }
+  if (phase === 'work') {
+    el.dataset.phase = 'rest';
+    el.dataset.remaining = el.dataset.restSeconds;
+    updateHiitUI(el);
+  } else if (round < rounds) {
+    el.dataset.phase = 'work';
+    el.dataset.round = String(round + 1);
+    el.dataset.remaining = el.dataset.workSeconds;
+    updateHiitUI(el);
+  } else {
+    finishHiitTimer(el);
+  }
+}
+function pauseHiitTimer(el) {
+  el.dataset.running = '0';
+  el.classList.remove('running');
+  const btn = el.querySelector('.hiit-toggle');
+  if (btn) { btn.textContent = '▶ Iniciar'; }
+  const interval = timerIntervals.get(el);
+  if (interval) { clearInterval(interval); timerIntervals.delete(el); }
+  activeTimersCount = Math.max(0, activeTimersCount - 1);
+  releaseWakeLockIfIdle();
+}
+function finishHiitTimer(el) {
+  const interval = timerIntervals.get(el);
+  if (interval) { clearInterval(interval); timerIntervals.delete(el); }
+  el.dataset.running = '0';
+  el.dataset.remaining = '0';
+  el.classList.remove('running');
+  el.classList.add('finished');
+  const btn = el.querySelector('.hiit-toggle');
+  if (btn) { btn.textContent = '▶ Iniciar'; }
+  el.querySelector('.hiit-display').textContent = '00:00';
+  el.querySelector('.hiit-phase-label').textContent = '✓ Completo';
+  const stationEl = el.querySelector('.hiit-station-label');
+  if (stationEl) stationEl.textContent = 'Bloque HIIT finalizado — vuelta a la calma respiratoria';
+  activeTimersCount = Math.max(0, activeTimersCount - 1);
+  releaseWakeLockIfIdle();
+  playTimerBeep(990);
+  if (navigator.vibrate) { try { navigator.vibrate([200, 100, 200, 100, 200]); } catch (e) { /* noop */ } }
+}
+function resetHiitTimer(el) {
+  pauseHiitTimer(el);
+  el.dataset.phase = 'work';
+  el.dataset.round = '1';
+  el.dataset.remaining = el.dataset.workSeconds;
+  el.classList.remove('finished');
+  updateHiitUI(el);
+}
+function toggleHiitTimer(el) {
+  if (el.dataset.running === '1') { pauseHiitTimer(el); } else { startHiitTimer(el); }
+}
+function renderHiitTimer(hiit) {
+  const stationsJson = JSON.stringify(hiit.stations || []).replace(/"/g, '&quot;');
+  return `
+    <div class="hiit-timer" data-work-seconds="${hiit.workSeconds}" data-rest-seconds="${hiit.restSeconds}" data-rounds="${hiit.rounds}" data-round="1" data-phase="work" data-remaining="${hiit.workSeconds}" data-running="0" data-stations="${stationsJson}">
+      <div class="hiit-round-label">Ronda 1 / ${hiit.rounds}</div>
+      <div class="hiit-phase-label">💪 Trabajo</div>
+      <div class="hiit-display">${formatTime(hiit.workSeconds)}</div>
+      <div class="hiit-station-label">${(hiit.stations || [])[0] || ''}</div>
+      <div class="hiit-controls">
+        <button type="button" class="hiit-btn hiit-toggle">▶ Iniciar</button>
+        <button type="button" class="hiit-btn reset hiit-reset">↺ Reiniciar</button>
+      </div>
+    </div>`;
+}
+/* ============================================================
+   CALCULADORA DE RM (fórmula de Epley)
+   ============================================================ */
+function calculateRM() {
+  const weight = parseFloat(document.getElementById('rm-weight').value);
+  const reps = parseInt(document.getElementById('rm-reps').value, 10);
+  const resultBox = document.getElementById('rm-calc-result');
+  const oneRmValueEl = document.getElementById('rm-1rm-value');
+  const tableEl = document.getElementById('rm-calc-table');
+  if (!weight || weight <= 0 || !reps || reps <= 0) {
+    resultBox.style.display = 'none';
+    return;
+  }
+  const oneRm = reps === 1 ? weight : weight * (1 + reps / 30);
+  oneRmValueEl.textContent = oneRm.toFixed(1) + ' kg';
+  const percentages = [90, 85, 80, 75, 70, 65, 60, 55];
+  tableEl.innerHTML = percentages.map((p) => {
+    const val = (oneRm * p / 100).toFixed(1);
+    return `<div class="rm-pct-chip"><span class="rm-pct">${p}%</span><span class="rm-kg">${val} kg</span></div>`;
+  }).join('');
+  resultBox.style.display = 'block';
+}
+document.getElementById('rm-calc-btn').addEventListener('click', calculateRM);
+['rm-weight', 'rm-reps'].forEach((id) => {
+  document.getElementById(id).addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') calculateRM();
+  });
+});
+/* ============================================================
+   STORAGE HELPERS
+   ============================================================ */
 async function loadState() {
   try {
-    const completedRes = await window.storage.get(STORAGE_KEY_COMPLETED, false);
-    completedWorkouts = completedRes ? JSON.parse(completedRes.value) : [];
-  } catch (e) {
-    completedWorkouts = [];
-  }
+    const raw = localStorage.getItem(STORAGE_KEY_COMPLETED);
+    completedWorkouts = raw ? JSON.parse(raw) : [];
+  } catch (e) { completedWorkouts = []; }
   try {
-    const weekRes = await window.storage.get(STORAGE_KEY_WEEK, false);
-    currentWeek = weekRes ? parseInt(weekRes.value, 10) : 1;
+    const raw = localStorage.getItem(STORAGE_KEY_SETS);
+    completedSets = raw ? JSON.parse(raw) : {};
+  } catch (e) { completedSets = {}; }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_WEEK);
+    currentWeek = raw ? parseInt(raw, 10) : 1;
     if (!currentWeek || currentWeek < 1 || currentWeek > 4) currentWeek = 1;
-  } catch (e) {
-    currentWeek = 1;
-  }
+  } catch (e) { currentWeek = 1; }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_MODE);
+    currentMode = raw === 'sin-hiit' ? 'sin-hiit' : 'con-hiit';
+  } catch (e) { currentMode = 'con-hiit'; }
 }
-
 async function saveCompleted() {
-  try {
-    await window.storage.set(STORAGE_KEY_COMPLETED, JSON.stringify(completedWorkouts), false);
-  } catch (e) {
-    console.error('No se pudo guardar el progreso', e);
-  }
+  try { localStorage.setItem(STORAGE_KEY_COMPLETED, JSON.stringify(completedWorkouts)); }
+  catch (e) { console.error('No se pudo guardar el progreso', e); }
 }
-
+async function saveSetChecks() {
+  try { localStorage.setItem(STORAGE_KEY_SETS, JSON.stringify(completedSets)); }
+  catch (e) { console.error('No se pudo guardar las series', e); }
+}
 async function saveWeek() {
-  try {
-    await window.storage.set(STORAGE_KEY_WEEK, String(currentWeek), false);
-  } catch (e) {
-    console.error('No se pudo guardar la semana actual', e);
-  }
+  try { localStorage.setItem(STORAGE_KEY_WEEK, String(currentWeek)); }
+  catch (e) { console.error('No se pudo guardar la semana actual', e); }
 }
-
-// ---- Rendering ----
+async function saveMode() {
+  try { localStorage.setItem(STORAGE_KEY_MODE, currentMode); }
+  catch (e) { console.error('No se pudo guardar el modo', e); }
+}
+/* ============================================================
+   MODO SIN HIIT / CON HIIT (60 min vs 90 min)
+   ============================================================ */
+function updateModeUI() {
+  document.querySelectorAll('.mode-btn').forEach((b) => b.classList.toggle('active', b.dataset.mode === currentMode));
+  const note = document.getElementById('mode-note-text');
+  note.textContent = currentMode === 'sin-hiit'
+    ? 'Oculta el bloque final de HIIT/cardio (sesión más corta, solo fuerza).'
+    : 'Incluye el bloque final de HIIT/cardio de bajo impacto, según indicación médica.';
+}
+function applyModeToModal() {
+  document.querySelectorAll('.js-optional-block').forEach((el) => {
+    el.style.display = currentMode === 'sin-hiit' ? 'none' : '';
+  });
+}
+document.querySelectorAll('.mode-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    currentMode = btn.dataset.mode;
+    updateModeUI();
+    await saveMode();
+    filterGrid();
+    applyModeToModal();
+  });
+});
+/* ============================================================
+   RENDER — LISTADO / FILTROS
+   ============================================================ */
 function renderFilters() {
-  const levels = [...new Set(workouts.map(w => w.level))];
+  const levels = [...new Set(workouts.map((w) => w.level))];
   const filterLevelContainer = document.getElementById('filter-level');
-  filterLevelContainer.innerHTML = '<div class="chip active" data-group="level" data-val="all" role="button" tabindex="0">Todos los días</div>';
-
-  levels.forEach(lvl => {
-    const matchingWorkout = workouts.find(w => w.level === lvl);
+  filterLevelContainer.innerHTML = '<div class="chip active" data-group="level" data-val="all" role="button" tabindex="0">Todas</div>';
+  levels.forEach((lvl) => {
+    const matchingWorkout = workouts.find((w) => w.level === lvl);
     const slug = matchingWorkout ? matchingWorkout.levelSlug : lvl.replace(/\s+/g, '_');
     const chip = document.createElement('div');
     chip.className = 'chip';
@@ -543,76 +1164,65 @@ function renderFilters() {
     chip.textContent = lvl;
     filterLevelContainer.appendChild(chip);
   });
-
-  filterLevelContainer.querySelectorAll('.chip').forEach(chip => {
-    chip.addEventListener('click', function() { activateChip(this); });
-    chip.addEventListener('keydown', function(e) {
+  filterLevelContainer.querySelectorAll('.chip').forEach((chip) => {
+    chip.addEventListener('click', function () { activateChip(this); });
+    chip.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateChip(this); }
     });
   });
 }
-
 function activateChip(chip) {
   const group = chip.getAttribute('data-group');
-  document.querySelectorAll(`.chip[data-group="${group}"]`).forEach(c => c.classList.remove('active'));
+  document.querySelectorAll(`.chip[data-group="${group}"]`).forEach((c) => c.classList.remove('active'));
   chip.classList.add('active');
   filterGrid();
 }
-
 function filterGrid() {
   const levelVal = document.querySelector('.chip[data-group="level"].active').getAttribute('data-val');
   let filtered = workouts;
   if (levelVal !== 'all') {
-    filtered = filtered.filter(w => w.levelSlug === levelVal);
+    filtered = filtered.filter((w) => w.levelSlug === levelVal);
   }
   renderGrid(filtered);
 }
-
 function updateStats() {
   document.getElementById('stat-count').textContent = workouts.length;
-  document.getElementById('stat-week').textContent = currentWeek;
   const pct = workouts.length ? Math.round((completedWorkouts.length / workouts.length) * 100) : 0;
   document.getElementById('progress-pct').textContent = pct + '%';
   document.getElementById('progress-fill').style.width = pct + '%';
 }
-
 function updateWeekUI() {
-  document.querySelectorAll('.week-btn').forEach(btn => {
+  document.querySelectorAll('.week-btn').forEach((btn) => {
     btn.classList.toggle('active', parseInt(btn.getAttribute('data-week'), 10) === currentWeek);
   });
-  document.querySelectorAll('#mesociclo-weeks li').forEach(li => {
-    li.classList.toggle('week-active', parseInt(li.getAttribute('data-week'), 10) === currentWeek);
-  });
 }
-
+function durationLabel(w) {
+  return (currentMode === 'sin-hiit' ? w.duration.base : w.duration.full) + ' min';
+}
 function blockSummary(w) {
   const parts = [];
   if (w.warmup && w.warmup.length) parts.push('Warm-up');
-  if (w.main && w.main.length) parts.push('Fuerza');
-  if (w.metcon && w.metcon.length) parts.push('HIIT');
+  if (w.main && w.main.length) parts.push('Principal');
+  if (w.hiit) parts.push('HIIT');
+  if (w.core) parts.push('Core');
   return parts.join(' · ');
 }
-
 function renderGrid(data) {
   const grid = document.getElementById('grid');
   const meta = document.getElementById('grid-meta');
   grid.innerHTML = '';
-
   updateStats();
-
   if (data.length === 0) {
     grid.innerHTML = `
       <div class="empty">
-        <h3>No se encontraron rutinas asignadas</h3>
-        <p>Modificá el filtro de día para ver el resto del plan.</p>
+        <h3>No se encontraron sesiones</h3>
+        <p>Modificá el filtro para ver el resto del plan.</p>
       </div>`;
-    meta.textContent = "Mostrando 0 rutinas";
+    meta.textContent = 'Mostrando 0 sesiones';
     return;
   }
-
   meta.textContent = `Mostrando ${data.length} de ${workouts.length} sesiones estructuradas`;
-
-  data.forEach(w => {
+  data.forEach((w) => {
     const isCompleted = completedWorkouts.includes(w.id);
     const card = document.createElement('div');
     card.className = `card ${isCompleted ? 'completed' : ''}`;
@@ -620,7 +1230,6 @@ function renderGrid(data) {
     card.setAttribute('tabindex', '0');
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `Abrir rutina ${w.title}`);
-
     card.innerHTML = `
       <div class="card-accent"></div>
       <div class="card-body">
@@ -636,13 +1245,12 @@ function renderGrid(data) {
         <div class="card-meta-info">
           <div class="meta-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            <span>${blockSummary(w)}</span>
+            <span>${durationLabel(w)} · ${blockSummary(w)}</span>
           </div>
         </div>
         <button type="button">${isCompleted ? 'Completado ✓' : 'Ver rutina'}</button>
       </div>
     `;
-
     const openHandler = () => openModal(w, card);
     card.addEventListener('click', openHandler);
     card.addEventListener('keydown', (e) => {
@@ -653,111 +1261,237 @@ function renderGrid(data) {
       e.stopPropagation();
       openHandler();
     });
-
     grid.appendChild(card);
   });
+  // Tarjetas "pendiente de definición" para los días 2-5, solo informativas
+  const definedSlugs = new Set(workouts.map((w) => w.levelSlug));
+  const allSlugs = ['dia1', 'dia2', 'dia3', 'dia4', 'dia5'];
+  const levelVal = document.querySelector('.chip[data-group="level"].active').getAttribute('data-val');
+  if (levelVal === 'all') {
+    allSlugs.filter((s) => !definedSlugs.has(s)).forEach((slug, idx) => {
+      const num = slug.replace('dia', '');
+      const card = document.createElement('div');
+      card.className = 'card pending';
+      card.innerHTML = `
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-tags"><span class="tag tag-pending">Día ${num}</span></div>
+          <h2>DÍA ${num} — Pendiente</h2>
+          <p class="card-desc">Se sumará a la app una vez que se apruebe el enfoque de este día en la Fase 1 de texto.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-meta-info"><div class="meta-item"><span>A definir con el Coach</span></div></div>
+          <button type="button" disabled>Próximamente</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
 }
-
-function getExerciseRow(ex, idx) {
+/* ============================================================
+   RENDER — BLOQUES DEL MODAL
+   ============================================================ */
+function renderSafetyAlerts(workout) {
+  if (!workout.safetyAlerts || !workout.safetyAlerts.length) return '';
+  const items = workout.safetyAlerts.map((a) => `<li>${a}</li>`).join('');
+  return `
+    <div class="modal-safety-box">
+      <div class="modal-safety-title">🛡️ Adaptaciones Clínicas de Esta Sesión</div>
+      <ul>${items}</ul>
+    </div>`;
+}
+function renderWarmupRow(ex, idx) {
   return `
     <div class="exercise-row">
       <div class="exercise-num">${idx + 1}</div>
       <div class="exercise-title-container">
-        <div class="exercise-name">${ex.name}<sub>${ex.sub}</sub></div>
+        <div class="exercise-name">${ex.name}${ex.yt ? ` <a class="video-link" href="javascript:void(0)" data-yt="${ex.yt}">▶ Ver técnica</a>` : ''}</div>
       </div>
-      <div class="exercise-detail"><b>${ex.reps}</b>${ex.detail ? ex.detail : ''}</div>
-    </div>
-  `;
+      <div class="exercise-detail"><b>${ex.reps}</b></div>
+    </div>`;
 }
-
+function renderMainBlock(workout, block, idx) {
+  const blockId = 'main-' + idx;
+  let exHtml = '';
+  block.exercises.forEach((ex, exIdx) => {
+    const key = workout.id + '-' + blockId + '-e' + exIdx;
+    const labelHtml = ex.label
+      ? `<div class="group-ex-label">${ex.label}</div>`
+      : `<div class="group-ex-label" style="background:var(--fire);">${exIdx + 1}</div>`;
+    exHtml += `
+      <div class="group-ex-row">
+        ${labelHtml}
+        <div class="group-ex-main">
+          <div class="group-ex-name">${ex.name}${ex.yt ? ` <a class="video-link" href="javascript:void(0)" data-yt="${ex.yt}">▶ Ver técnica</a>` : ''}</div>
+          <div class="group-ex-detail"><b>${ex.reps}</b>${ex.tempo ? ' · Tempo ' + ex.tempo : ''}${ex.rpe ? ' · ' + ex.rpe : ''}${renderTempoNote(ex.tempo)}</div>
+          ${renderSetChecks(key, ex.sets)}
+        </div>
+      </div>`;
+  });
+  const roundTimerLabel = block.format === 'straight' ? 'Descanso' : 'Descanso entre rondas';
+  const timerHtml = `
+    <div class="group-round-timer">
+      <div class="group-round-timer-label">${roundTimerLabel}</div>
+      ${renderTimerWidget({ type: 'rest', seconds: block.restSeconds })}
+    </div>`;
+  const formatLabel = block.format === 'straight' ? 'Serie Recta' : (block.format === 'biset' ? 'Biset' : 'Triset');
+  return `
+    <div class="group-block">
+      <div class="group-block-header">
+        <div class="group-block-title-wrap">
+          <div class="group-block-title">${block.title}</div>
+          <span class="group-complete-badge">✓ Completo</span>
+        </div>
+        <span class="format-tag ${block.format}">${formatLabel}</span>
+      </div>
+      <div class="group-block-body">${exHtml}</div>
+      ${timerHtml}
+      <div class="block-notes">
+        <p><strong style="color:var(--gold)">💡 Pautas de ejecución:</strong> ${block.tips}</p>
+        <p><strong style="color:var(--fire-glow)">🎯 Objetivo:</strong> ${block.objetivo}</p>
+        <p><strong style="color:var(--violet-light)">🧠 Qué deberías sentir:</strong> ${block.sensacion || 'Foco en la conexión mente-músculo del grupo trabajado, no solo en mover la carga.'}</p>
+      </div>
+    </div>`;
+}
+function renderHiitBlock(workout) {
+  const h = workout.hiit;
+  if (!h) return '';
+  return `
+    <div class="block js-optional-block">
+      <div class="block-header">
+        <div class="block-header-row">
+          <div class="block-title metcon">🔥 Bloque Final Opcional — ${h.title} <span class="block-optional-tag">Modo Con HIIT</span></div>
+          <span class="block-check-badge">✓ Completo</span>
+        </div>
+      </div>
+      <div class="block-content hiit-widget">
+        ${renderHiitTimer(h)}
+        <div class="hiit-rounds-label">Marcá cada ronda completada</div>
+        ${renderSetChecks(workout.id + '-hiit', h.rounds)}
+      </div>
+      <div class="block-notes">
+        <p><strong style="color:var(--gold)">💡 Pautas de ejecución:</strong> ${h.tips}</p>
+        <p><strong style="color:var(--teal-light)">🎯 Objetivo:</strong> ${h.objetivo}</p>
+        <p><strong style="color:var(--violet-light)">🧠 Qué deberías sentir:</strong> ${h.sensacion}</p>
+      </div>
+    </div>`;
+}
+function renderCore(workout) {
+  const c = workout.core;
+  if (!c) return '';
+  const rows = c.exercises.map((ex, idx) => {
+    const key = workout.id + '-core-e' + idx;
+    const cueHtml = (ex.tips || ex.sensacion)
+      ? `<div class="cue-note">${ex.tips ? `<b>💡 Pauta:</b> ${ex.tips}` : ''}${ex.tips && ex.sensacion ? '<br>' : ''}${ex.sensacion ? `<b>🧠 Sensación:</b> ${ex.sensacion}` : ''}</div>`
+      : '';
+    return `
+    <div class="exercise-row">
+      <div class="exercise-num">${idx + 1}</div>
+      <div class="exercise-title-container">
+        <div class="exercise-name">${ex.name}${ex.yt ? ` <a class="video-link" href="javascript:void(0)" data-yt="${ex.yt}">▶ Ver técnica</a>` : ''}</div>
+        ${cueHtml}
+        ${renderSetChecks(key, ex.sets)}
+      </div>
+      <div class="exercise-detail"><b>${ex.reps}</b>${renderTimerWidget({ type: 'rest', seconds: ex.restSeconds })}</div>
+    </div>`;
+  }).join('');
+  return `
+    <div class="block">
+      <div class="block-header">
+        <div class="block-header-row">
+          <div class="block-title core">🧩 Core</div>
+          <span class="block-check-badge">✓ Completo</span>
+        </div>
+      </div>
+      <div class="block-content">${rows}</div>
+    </div>`;
+}
+function renderCooldown(list) {
+  return `
+    <div class="block">
+      <div class="block-header"><div class="block-title" style="color:var(--gold);">🧘 Cool-Down y Recuperación</div></div>
+      <div class="block-content"><ul class="cooldown-list">${list.map((t) => `<li>${t}</li>`).join('')}</ul></div>
+    </div>`;
+}
+/* ============================================================
+   MODAL PRINCIPAL
+   ============================================================ */
 function openModal(w, triggerEl) {
+  clearAllExTimers();
   lastFocusedElement = triggerEl || document.activeElement;
   const overlay = document.getElementById('overlay');
   const title = document.getElementById('modal-title');
   const tags = document.getElementById('modal-tags');
   const bodyContent = document.getElementById('modal-exercises-content');
   const btnComplete = document.getElementById('btn-complete');
-
-  title.innerHTML = `${w.title}<br><span style="font-size:14px; font-family:'Inter'; font-weight:400; color:var(--text-secondary);">${w.subtitle}</span>`;
+  title.innerHTML = `${w.title}<br><span style="font-size:14px; font-family:'Inter'; font-weight:400; color:var(--text-secondary);">${w.subtitle} · ${durationLabel(w)}</span>`;
   tags.innerHTML = `
     <span class="tag tag-disc-musculacion">${w.discipline}</span>
     <span class="tag tag-level-avanzado">${w.level}</span>
   `;
-
   let html = '';
-
+  html += renderSafetyAlerts(w);
   if (w.warmup && w.warmup.length > 0) {
     html += `
       <div class="block">
-        <div class="block-header"><div class="block-title warmup">🔥 Warm Up / Activación Biomecánica</div></div>
+        <div class="block-header"><div class="block-title warmup">🔥 Warm Up / Activación Específica</div></div>
         <div class="block-content">`;
-    w.warmup.forEach((ex, idx) => { html += getExerciseRow(ex, idx); });
+    w.warmup.forEach((ex, idx) => { html += renderWarmupRow(ex, idx); });
     html += `</div></div>`;
   }
-
   if (w.main && w.main.length > 0) {
     html += `
       <div class="block">
-        <div class="block-header"><div class="block-title main">🏋️‍♀️ Bloque A / B / C — Fuerza en Entorno Estable</div></div>
-        <div class="block-content">`;
-    w.main.forEach((ex, idx) => { html += getExerciseRow(ex, idx); });
+        <div class="block-header"><div class="block-title main">🏋️‍♀️ Bloques Principales</div></div>
+        <div class="block-content" style="padding-top:0.75rem;">`;
+    w.main.forEach((block, idx) => { html += renderMainBlock(w, block, idx); });
     html += `</div></div>`;
   }
-
-  if (w.metcon && w.metcon.length > 0) {
-    html += `
-      <div class="block">
-        <div class="block-header"><div class="block-title metcon">⏱️ Bloque D / E — Intervalos HIIT & Core Específico</div></div>
-        <div class="block-content">`;
-    w.metcon.forEach((ex, idx) => { html += getExerciseRow(ex, idx); });
-    html += `</div></div>`;
-  }
-
+  html += renderHiitBlock(w);
+  html += renderCore(w);
+  html += renderCooldown(w.cooldown || []);
   if (w.technicalAnalysis) {
     html += `
-      <div class="block" style="border: 1px dashed rgba(124,77,255,0.3); background: rgba(124,77,255,0.01);">
-        <div class="block-header"><div class="block-title" style="color: var(--violet-light);">📋 Análisis Biomecánico & Coaching Tips de la Sesión</div></div>
+      <div class="block" style="border: 1px dashed rgba(255,61,0,0.3); background: rgba(255,61,0,0.01);">
+        <div class="block-header"><div class="block-title" style="color: var(--fire-glow);">📋 Análisis Técnico y Estrategia (Coach JP)</div></div>
         <div class="block-content" style="font-size: 13.5px; color: var(--text-secondary); padding: 1rem 0;">
           <p style="margin-bottom: 0.75rem;"><strong>🎯 Objetivos del bloque:</strong> ${w.technicalAnalysis.objectives}</p>
           <p style="margin-bottom: 0.75rem;"><strong>💡 Tips técnicos de ejecución:</strong> ${w.technicalAnalysis.tips}</p>
-          <p><strong>⚡ Estrategia de control lumbar (Coach JP):</strong> ${w.technicalAnalysis.strategies}</p>
+          <p><strong>⚡ Estrategia de ejecución:</strong> ${w.technicalAnalysis.strategies}</p>
         </div>
       </div>
     `;
   }
-
   bodyContent.innerHTML = html;
-
+  applyModeToModal();
+  refreshAllBlockBadges();
   if (completedWorkouts.includes(w.id)) {
-    btnComplete.textContent = "Sesión completada ✓";
+    btnComplete.textContent = 'Sesión completada ✓';
     btnComplete.classList.add('done');
   } else {
-    btnComplete.textContent = "Marcar como completado";
+    btnComplete.textContent = 'Marcar como completado';
     btnComplete.classList.remove('done');
   }
-
   btnComplete.onclick = async (e) => {
     e.stopPropagation();
     if (completedWorkouts.includes(w.id)) {
-      completedWorkouts = completedWorkouts.filter(id => id !== w.id);
-      btnComplete.textContent = "Marcar como completado";
+      completedWorkouts = completedWorkouts.filter((id) => id !== w.id);
+      btnComplete.textContent = 'Marcar como completado';
       btnComplete.classList.remove('done');
     } else {
       completedWorkouts.push(w.id);
-      btnComplete.textContent = "Sesión completada ✓";
+      btnComplete.textContent = 'Sesión completada ✓';
       btnComplete.classList.add('done');
     }
     await saveCompleted();
     filterGrid();
   };
-
   overlay.classList.add('open');
   document.getElementById('modal-close').focus();
   document.addEventListener('keydown', handleModalKeydown);
 }
-
 function handleModalKeydown(e) {
   if (e.key === 'Escape') {
+    if (isVideoPopupOpen()) { closeVideoPopup(); return; }
     closeModal();
     return;
   }
@@ -774,44 +1508,78 @@ function handleModalKeydown(e) {
     }
   }
 }
-
 function closeModal() {
+  closeVideoPopup();
   document.getElementById('overlay').classList.remove('open');
   document.removeEventListener('keydown', handleModalKeydown);
   if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
     lastFocusedElement.focus();
   }
 }
-
 document.getElementById('modal-close').addEventListener('click', closeModal);
-document.querySelectorAll('.btn-close-modal').forEach(btn => btn.addEventListener('click', closeModal));
-document.getElementById('overlay').addEventListener('click', function(e) {
+document.querySelectorAll('.btn-close-modal').forEach((btn) => btn.addEventListener('click', closeModal));
+document.getElementById('overlay').addEventListener('click', function (e) {
   if (e.target === this) closeModal();
 });
-
-document.querySelectorAll('.week-btn').forEach(btn => {
+/* ============================================================
+   VIDEO POPUP
+   ============================================================ */
+function isVideoPopupOpen() {
+  const wrap = document.getElementById('video-popup-wrap');
+  return !!(wrap && wrap.classList.contains('open'));
+}
+function openVideoPopup(videoId) {
+  if (!videoId) return;
+  const wrap = document.getElementById('video-popup-wrap');
+  const iframe = document.getElementById('video-popup-iframe');
+  const fallbackLink = document.getElementById('video-popup-fallback-link');
+  iframe.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1';
+  if (fallbackLink) fallbackLink.href = 'https://www.youtube.com/watch?v=' + videoId;
+  wrap.classList.add('open');
+}
+function closeVideoPopup() {
+  const wrap = document.getElementById('video-popup-wrap');
+  const iframe = document.getElementById('video-popup-iframe');
+  if (!wrap || !wrap.classList.contains('open')) return;
+  iframe.src = '';
+  wrap.classList.remove('open');
+}
+document.getElementById('video-popup-close').addEventListener('click', closeVideoPopup);
+document.addEventListener('click', function (e) {
+  const link = e.target.closest('.video-link');
+  if (!link) return;
+  e.preventDefault();
+  e.stopPropagation();
+  openVideoPopup(link.getAttribute('data-yt'));
+});
+/* ============================================================
+   SEMANA DEL MESOCICLO / RESET
+   ============================================================ */
+document.querySelectorAll('.week-btn').forEach((btn) => {
   btn.addEventListener('click', async () => {
     currentWeek = parseInt(btn.getAttribute('data-week'), 10);
     updateWeekUI();
-    updateStats();
     await saveWeek();
   });
 });
-
 document.getElementById('reset-progress').addEventListener('click', async () => {
-  if (!confirm('¿Reiniciar el progreso de las 4 rutinas marcadas como completadas? Esta acción no se puede deshacer.')) return;
+  if (!confirm('¿Reiniciar el progreso de sesiones y series completadas?')) return;
   completedWorkouts = [];
+  completedSets = {};
   await saveCompleted();
+  await saveSetChecks();
   filterGrid();
 });
-
+/* ============================================================
+   INIT
+   ============================================================ */
 async function init() {
   await loadState();
   renderFilters();
   updateWeekUI();
+  updateModeUI();
   filterGrid();
 }
-
 init();
 </script>
 </body>
