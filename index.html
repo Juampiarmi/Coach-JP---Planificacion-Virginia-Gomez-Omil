@@ -52,20 +52,53 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
-  nav {
-    position: sticky;
+  /* ===== Masthead (full-width, top of page, non-sticky) ===== */
+  .masthead {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding: clamp(1.75rem, 4vw, 2.75rem) 2rem clamp(1.5rem, 3vw, 2.25rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(10,10,11,0.5), transparent);
+  }
+  .masthead .nav-brand { flex-direction: column; gap: 0.85rem; }
+  .masthead .nav-brand-wordmark { align-items: center; }
+  .masthead .nav-logo-icon { width: clamp(64px, 9vw, 100px); height: clamp(64px, 9vw, 100px); }
+  .masthead .nav-logo-icon svg { width: 46%; height: 46%; }
+  .masthead .nav-brand-text { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+  .masthead .nav-brand-tag { margin-top: 8px; }
+  /* ===== Sticky bar (appears once scrolled past masthead — brand only) ===== */
+  .sticky-bar {
+    position: fixed;
     top: 0;
-    z-index: 100;
-    background: rgba(10, 10, 11, 0.8);
+    left: 0;
+    right: 0;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    padding: 8px 1.25rem;
+    background: rgba(10, 10, 11, 0.88);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 75px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease;
+    pointer-events: none;
   }
+  .sticky-bar.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .sticky-bar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex: 1; justify-content: center; min-width: 0; }
+  .sticky-bar .nav-logo-icon { width: 50px; height: 50px; flex-shrink: 0; }
+  .sticky-bar .nav-logo-icon svg { width: 24px; height: 24px; }
+  .sticky-bar .nav-brand-wordmark { flex-direction: row; align-items: center; gap: 8px; min-width: 0; }
+  .sticky-bar .nav-brand-text { font-size: 1.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sticky-bar .nav-brand-tag { display: none; }
   .nav-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
   .nav-logo-icon {
     position: relative;
@@ -112,10 +145,10 @@
   .nav-brand-wordmark { display: flex; flex-direction: column; line-height: 1; }
   .nav-brand-tag { display: flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fire-glow); margin-top: 5px; }
   .nav-brand-tag::before, .nav-brand-tag::after { content: ''; display: inline-block; width: 10px; height: 1px; background: rgba(255,109,58,0.5); }
-  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .hero-badges { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin: 0.9rem 0 1.15rem; }
   .nav-badge { background: rgba(255, 61, 0, 0.1); border: 1px solid rgba(255, 61, 0, 0.2); color: var(--fire-glow); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
   .nav-badge-safe { background: rgba(0,137,123,0.12); border: 1px solid rgba(0,137,123,0.28); color: var(--teal-light); }
-  .hero { padding: 3rem 2rem 2.5rem; max-width: 1200px; margin: 0 auto; }
+  .hero { padding: 3rem 2rem 2.5rem; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
   .hero-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fire); margin-bottom: 0.75rem; }
   .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.05; letter-spacing: 0.01em; margin-bottom: 1rem; }
   .hero h1 em { font-style: normal; color: var(--fire); }
@@ -206,7 +239,7 @@
   .week-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: border-color 0.25s cubic-bezier(0.16,1,0.3,1), color 0.25s ease, background 0.25s ease, transform 0.2s ease; font-family: 'Inter', sans-serif; }
   .week-btn:hover { border-color: rgba(124,77,255,0.4); color: var(--text-primary); transform: translateY(-1px); }
   .week-btn.active { background: rgba(124,77,255,0.16); border-color: var(--violet); color: var(--text-primary); }
-  .filters-wrap { background: var(--bg-filter); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 75px; z-index: 90; overflow-x: auto; }
+  .filters-wrap { background: var(--bg-filter); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 66px; z-index: 90; overflow-x: auto; }
   .filters-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; min-width: max-content; }
   .filter-group { display: flex; align-items: center; gap: 0.5rem; }
   .filter-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
@@ -420,30 +453,93 @@
   .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
   .skeleton-note { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 13px; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-  /* ===== HIIT interval timer ===== */
+  /* ===== HIIT / cardio interval timer — unified WOD-style clock ===== */
   .hiit-widget { padding: 1rem 1.1rem 1.2rem; }
-  .hiit-timer { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 1.2rem 1rem; background: rgba(255,255,255,0.015); border: 1px solid var(--border); border-radius: var(--radius-md); }
-  .hiit-round-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
-  .hiit-phase-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--teal-light); transition: color 0.2s ease; }
-  .hiit-timer.phase-work .hiit-phase-label { color: var(--fire-glow); }
-  .hiit-station-label { font-size: 12.5px; color: var(--text-secondary); text-align: center; min-height: 1.2em; }
-  .hiit-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 3rem; letter-spacing: 0.02em; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1; }
-  .hiit-timer.running .hiit-display { color: var(--gold); }
-  .hiit-timer.finished .hiit-display { color: var(--teal-light); animation: exTimerPulse 0.55s ease 2; }
-  .hiit-controls { display: flex; gap: 10px; margin-top: 4px; }
-  .hiit-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 20px; border-radius: 20px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; }
-  .hiit-btn:hover { background: rgba(255,61,0,0.15); border-color: var(--fire); }
-  .hiit-btn.reset:hover { background: rgba(255,255,255,0.12); border-color: var(--border); }
+  .hiit-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 1.5rem 1.25rem 1.75rem;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+  .hiit-round-label { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .hiit-phase-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: clamp(1.1rem, 2.6vw, 1.5rem); letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-light); transition: color 0.2s ease; }
+  .hiit-timer.phase-prepare .hiit-phase-label { color: var(--violet-light); }
+  .hiit-timer.phase-work .hiit-phase-label { color: var(--teal-light); }
+  .hiit-timer.phase-rest .hiit-phase-label { color: var(--fire-glow); }
+  .hiit-timer.finished .hiit-phase-label { color: var(--gold); }
+  .hiit-station-label { font-size: 13px; color: var(--text-secondary); text-align: center; min-height: 1.2em; }
+  .hiit-display {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.75rem, 15vw, 7.5rem);
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    width: 100%;
+    text-align: center;
+  }
+  .hiit-timer.phase-prepare .hiit-display { color: var(--violet-light); }
+  .hiit-timer.phase-work.running .hiit-display { color: var(--teal-light); }
+  .hiit-timer.phase-rest.running .hiit-display { color: var(--fire-glow); }
+  .hiit-timer.finished .hiit-display { color: var(--gold); animation: exTimerPulse 0.55s ease 2; }
+  .hiit-progress-track { width: 100%; height: 10px; border-radius: 20px; background: rgba(255,255,255,0.07); overflow: hidden; box-sizing: border-box; }
+  .hiit-progress-fill { height: 100%; border-radius: 20px; width: 100%; background: linear-gradient(90deg, var(--violet), var(--violet-light)); transition: width 1s linear, background 0.3s ease; }
+  .hiit-timer.phase-work .hiit-progress-fill { background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+  .hiit-timer.phase-rest .hiit-progress-fill { background: linear-gradient(90deg, var(--fire), var(--fire-glow)); }
+  .hiit-timer.finished .hiit-progress-fill { background: linear-gradient(90deg, var(--gold), #FFE066); width: 100% !important; }
+  .hiit-controls { display: flex; gap: 16px; margin-top: 6px; align-items: center; justify-content: center; }
+  .hiit-btn-round {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+  }
+  .hiit-btn-round.play:hover, .hiit-timer.running .hiit-btn-round.play { background: rgba(0,137,123,0.22); border-color: var(--teal); }
+  .hiit-btn-round.reset:hover { background: rgba(255,255,255,0.14); }
   .hiit-rounds-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 1rem 0 0.5rem; text-align: center; }
+  /* ===== ambient parallax background (blobs + muscle-fiber lines + gym mural) ===== */
+  .parallax-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .parallax-blobs { position: absolute; inset: -10%; width: 120%; height: 120%; will-change: transform; }
+  .pb-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; will-change: transform; }
+  .pb-blob.b1 { width: 520px; height: 520px; top: -6%; left: 2%; background: radial-gradient(circle, rgba(255,61,0,0.35), transparent 70%); animation: pbDrift1 26s ease-in-out infinite; }
+  .pb-blob.b2 { width: 620px; height: 620px; top: 30%; right: -8%; background: radial-gradient(circle, rgba(124,77,255,0.3), transparent 70%); animation: pbDrift2 34s ease-in-out infinite; }
+  .pb-blob.b3 { width: 480px; height: 480px; bottom: -6%; left: 20%; background: radial-gradient(circle, rgba(0,137,123,0.28), transparent 70%); animation: pbDrift3 30s ease-in-out infinite; }
+  .pb-blob.b4 { width: 380px; height: 380px; top: 55%; left: 40%; background: radial-gradient(circle, rgba(255,214,0,0.18), transparent 70%); animation: pbDrift1 22s ease-in-out infinite reverse; }
+  @keyframes pbDrift1 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,20px) scale(1.08); } }
+  @keyframes pbDrift2 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-24px,26px) scale(1.05); } }
+  @keyframes pbDrift3 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(18px,-22px) scale(1.1); } }
+  .parallax-fibers { position: absolute; inset: -5%; width: 110%; height: 110%; opacity: 0.05; will-change: transform; }
+  .parallax-fibers svg { width: 100%; height: 100%; }
+  .parallax-mural-wrap { position: absolute; inset: -5%; width: 110%; height: 110%; opacity: 0.21; will-change: transform; }
+  .parallax-mural-wrap svg { width: 100%; height: 100%; display: block; }
+  @media (prefers-reduced-motion: reduce) {
+    .pb-blob { animation: none !important; }
+  }
   /* ===== safety alert box (session-level clinical adaptation notes) ===== */
   @media (max-width: 640px) {
-    nav { flex-wrap: wrap; row-gap: 8px; padding: 10px 0.75rem; height: auto; min-height: 70px; }
-    .nav-brand { gap: 10px; }
-    .nav-brand-text { font-size: 1.7rem; }
-    .nav-brand-tag { display: none; }
-    .nav-logo-icon { width: 38px; height: 38px; }
-    .nav-logo-icon svg { width: 18px; height: 18px; }
-    .nav-right { width: 100%; justify-content: flex-start; }
+    .masthead { padding: 1.5rem 1rem 1.35rem; }
+    .masthead .nav-brand-tag { display: none; }
+    .sticky-bar { padding: 6px 0.9rem; }
+    .sticky-bar .nav-logo-icon { width: 42px; height: 42px; }
+    .sticky-bar .nav-brand-text { font-size: 1.4rem; }
+    .hero-badges { justify-content: flex-start; }
     .nav-badge { white-space: normal; text-align: left; font-size: 10.5px; line-height: 1.4; padding: 4px 10px; }
     .hero { padding: 1.75rem 1rem 2rem; }
     .hero-eyebrow { font-size: 11px; }
@@ -461,12 +557,142 @@
     .btn-close-modal { order: 2; }
     .progress-wrap { max-width: 100%; }
     .modal-body, .modal-content { -webkit-overflow-scrolling: touch; }
-    .hiit-display { font-size: 2.4rem; }
+    .hiit-btn-round { width: 52px; height: 52px; }
   }
 </style>
 </head>
 <body>
-<nav>
+<div class="parallax-bg" id="parallax-bg" aria-hidden="true">
+  <div class="parallax-blobs" data-depth="0.03">
+    <div class="pb-blob b1"></div>
+    <div class="pb-blob b2"></div>
+    <div class="pb-blob b3"></div>
+    <div class="pb-blob b4"></div>
+  </div>
+  <div class="parallax-fibers" data-depth="0.06">
+    <svg viewBox="0 0 1200 1600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M -50,200 C 200,150 400,320 650,220 C 900,120 1050,260 1250,180" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M -50,600 C 250,520 450,700 700,600 C 950,500 1100,650 1250,580" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M -50,1000 C 220,940 480,1100 720,1000 C 960,900 1120,1040 1250,980" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+      <path d="M -50,1400 C 240,1340 460,1500 700,1400 C 940,1300 1100,1440 1250,1380" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <div class="parallax-mural-wrap" data-depth="0.1">
+    <svg viewBox="0 0 1200 1600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+      <defs>
+        <filter id="sprayHalo" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="16" />
+        </filter>
+      </defs>
+      <rect x="0" y="0" width="1200" height="1600" fill="#FFFFFF" opacity="0.015" />
+      <g stroke="#FFFFFF" stroke-width="1.5" opacity="0.045">
+        <line x1="300" y1="0" x2="300" y2="1600" />
+        <line x1="620" y1="0" x2="620" y2="1600" />
+        <line x1="900" y1="0" x2="900" y2="1600" />
+        <line x1="0" y1="420" x2="1200" y2="420" />
+        <line x1="0" y1="900" x2="1200" y2="900" />
+        <line x1="0" y1="1250" x2="1200" y2="1250" />
+      </g>
+      <ellipse cx="180" cy="1080" rx="140" ry="90" fill="#FFFFFF" opacity="0.025" />
+      <ellipse cx="1020" cy="260" rx="110" ry="70" fill="#FFFFFF" opacity="0.02" />
+      <path d="M 60,140 C 90,220 70,300 110,400 C 130,460 90,520 120,600" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.04" />
+      <path d="M 1140,700 C 1100,780 1130,860 1090,940 C 1070,1000 1110,1060 1080,1140" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.035" />
+      <!-- Barra olímpica con discos (todo el equipamiento/frases vive dentro de una
+           zona central seguura que sobrevive tanto al recorte "slice" de un viewport
+           angosto/alto como al de uno ancho/bajo, ver verificación con Playwright) -->
+      <g transform="translate(430,560)">
+        <g opacity="0.5" filter="url(#sprayHalo)">
+          <rect x="-70" y="-7" width="140" height="14" rx="4" style="fill:var(--gold)" />
+          <circle cx="-70" cy="0" r="42" style="fill:var(--gold)" />
+          <circle cx="70" cy="0" r="42" style="fill:var(--gold)" />
+        </g>
+        <rect x="-70" y="-7" width="140" height="14" rx="4" style="fill:var(--gold)" stroke="rgba(10,10,11,0.7)" stroke-width="3.5" />
+        <circle cx="-70" cy="0" r="42" style="fill:var(--gold)" stroke="rgba(10,10,11,0.7)" stroke-width="5" />
+        <circle cx="70" cy="0" r="42" style="fill:var(--gold)" stroke="rgba(10,10,11,0.7)" stroke-width="5" />
+        <circle cx="-70" cy="0" r="12" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="3" />
+        <circle cx="70" cy="0" r="12" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="3" />
+        <rect x="-82" y="-8" width="12" height="16" rx="2.5" style="fill:var(--gold)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <rect x="70" y="-8" width="12" height="16" rx="2.5" style="fill:var(--gold)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <rect x="-76" y="38" width="5" height="16" rx="2.5" style="fill:var(--gold)" opacity="0.85" />
+        <rect x="64" y="38" width="4" height="12" rx="2" style="fill:var(--gold)" opacity="0.75" />
+      </g>
+      <!-- Pesa rusa (kettlebell) -->
+      <g transform="translate(400,800)">
+        <g opacity="0.5" filter="url(#sprayHalo)">
+          <path d="M 0,-33 C -28,-33 -37,-11 -34,8 C -31,30 -14,52 0,52 C 14,52 31,30 34,8 C 37,-11 28,-33 0,-33 Z" style="fill:var(--fire)" />
+          <path d="M -15,-33 C -15,-55 15,-55 15,-33" fill="none" style="stroke:var(--fire)" stroke-width="8" stroke-linecap="round" />
+        </g>
+        <path d="M 0,-33 C -28,-33 -37,-11 -34,8 C -31,30 -14,52 0,52 C 14,52 31,30 34,8 C 37,-11 28,-33 0,-33 Z" style="fill:var(--fire)" stroke="rgba(10,10,11,0.7)" stroke-width="3" />
+        <path d="M -15,-33 C -15,-55 15,-55 15,-33" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="6" stroke-linecap="round" />
+        <rect x="-6" y="52" width="4" height="14" rx="2" style="fill:var(--fire)" opacity="0.85" />
+        <rect x="4" y="52" width="3" height="10" rx="1.5" style="fill:var(--fire)" opacity="0.75" />
+      </g>
+      <!-- Mancuerna hexagonal grande -->
+      <g transform="translate(800,800)">
+        <g opacity="0.5" filter="url(#sprayHalo)">
+          <polygon points="-55,-34 -84.4,-17 -84.4,17 -55,34 -25.6,17 -25.6,-17" style="fill:var(--violet)" />
+          <polygon points="55,-34 84.4,-17 84.4,17 55,34 25.6,17 25.6,-17" style="fill:var(--violet)" />
+          <rect x="-40" y="-8" width="80" height="16" rx="4" style="fill:var(--violet)" />
+        </g>
+        <polygon points="-55,-34 -84.4,-17 -84.4,17 -55,34 -25.6,17 -25.6,-17" style="fill:var(--violet)" stroke="rgba(10,10,11,0.7)" stroke-width="3" />
+        <polygon points="55,-34 84.4,-17 84.4,17 55,34 25.6,17 25.6,-17" style="fill:var(--violet)" stroke="rgba(10,10,11,0.7)" stroke-width="3" />
+        <rect x="-40" y="-8" width="80" height="16" rx="4" style="fill:var(--violet)" stroke="rgba(10,10,11,0.7)" stroke-width="3" />
+        <circle cx="-55" cy="0" r="10" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <circle cx="55" cy="0" r="10" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <rect x="-88" y="34" width="5" height="18" rx="2.5" style="fill:var(--violet)" opacity="0.85" />
+        <rect x="60" y="34" width="5" height="14" rx="2" style="fill:var(--violet)" opacity="0.75" />
+      </g>
+      <!-- Mancuerna hexagonal chica -->
+      <g transform="translate(420,1040)">
+        <g opacity="0.5" filter="url(#sprayHalo)">
+          <polygon points="-33,-20.4 -50.7,-10.2 -50.7,10.2 -33,20.4 -15.3,10.2 -15.3,-10.2" style="fill:var(--teal)" />
+          <polygon points="33,-20.4 50.7,-10.2 50.7,10.2 33,20.4 15.3,10.2 15.3,-10.2" style="fill:var(--teal)" />
+          <rect x="-24" y="-5" width="48" height="10" rx="3" style="fill:var(--teal)" />
+        </g>
+        <polygon points="-33,-20.4 -50.7,-10.2 -50.7,10.2 -33,20.4 -15.3,10.2 -15.3,-10.2" style="fill:var(--teal)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <polygon points="33,-20.4 50.7,-10.2 50.7,10.2 33,20.4 15.3,10.2 15.3,-10.2" style="fill:var(--teal)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <rect x="-24" y="-5" width="48" height="10" rx="3" style="fill:var(--teal)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" />
+        <circle cx="-33" cy="0" r="6" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="2" />
+        <circle cx="33" cy="0" r="6" fill="none" stroke="rgba(10,10,11,0.7)" stroke-width="2" />
+        <rect x="-53" y="20.4" width="4" height="12" rx="2" style="fill:var(--teal)" opacity="0.85" />
+        <rect x="36" y="20.4" width="4" height="10" rx="1.5" style="fill:var(--teal)" opacity="0.75" />
+      </g>
+      <!-- Frases motivacionales en stencil -->
+      <g transform="translate(770,560) rotate(-5)">
+        <text x="0" y="0" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-weight="900" font-size="60" style="fill:var(--gold)" opacity="0.55" filter="url(#sprayHalo)">EARN IT</text>
+        <text x="0" y="0" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-weight="900" font-size="60" style="fill:var(--gold)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" paint-order="stroke">EARN IT</text>
+      </g>
+      <g transform="translate(760,1040) rotate(4)">
+        <text x="0" y="0" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-weight="900" font-size="46" style="fill:var(--fire)" opacity="0.55" filter="url(#sprayHalo)">BEAST MODE</text>
+        <text x="0" y="0" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-weight="900" font-size="46" style="fill:var(--fire)" stroke="rgba(10,10,11,0.7)" stroke-width="2.5" paint-order="stroke">BEAST MODE</text>
+      </g>
+      <g transform="translate(600,690) rotate(-3)">
+        <text x="0" y="0" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-weight="900" font-size="36" style="fill:var(--teal-light)" opacity="0.55" filter="url(#sprayHalo)">NO PAIN NO GAIN</text>
+        <text x="0" y="0" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-weight="900" font-size="36" style="fill:var(--teal-light)" stroke="rgba(10,10,11,0.7)" stroke-width="2" paint-order="stroke">NO PAIN NO GAIN</text>
+      </g>
+    </svg>
+  </div>
+</div>
+<div class="sticky-bar" id="sticky-bar">
+  <a class="sticky-bar-brand" href="#">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="boltGradSticky" x1="4" y1="1" x2="19" y2="23" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="60%" stop-color="#FFF6E0"/>
+            <stop offset="100%" stop-color="#FFD600"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#boltGradSticky)" fill-rule="evenodd" clip-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z"/>
+      </svg>
+    </div>
+    <div class="nav-brand-wordmark">
+      <span class="nav-brand-text">COACH<span>&nbsp;JP</span></span>
+    </div>
+  </a>
+</div>
+<nav class="masthead">
   <a class="nav-brand" href="#">
     <div class="nav-logo-icon">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -485,13 +711,13 @@
       <span class="nav-brand-tag">Readaptación &amp; Fuerza +50</span>
     </div>
   </a>
-  <div class="nav-right">
-    <span class="nav-badge nav-badge-safe" title="Lumbar seguro · Sin Valsalva · Sin impacto en 5º metatarso">🛡️ Protocolo Clínico Activo</span>
-    <span class="nav-badge" id="nav-badge-level">Cargando…</span>
-  </div>
 </nav>
 <section class="hero">
   <p class="hero-eyebrow">Performance Hub — Alumna: <span id="student-name-text">Virginia Gomez Omil</span></p>
+  <div class="hero-badges">
+    <span class="nav-badge" id="nav-badge-level">Cargando…</span>
+    <span class="nav-badge nav-badge-safe" title="Lumbar seguro · Sin Valsalva · Sin impacto en 5º metatarso">🛡️ Protocolo Clínico Activo</span>
+  </div>
   <h1 id="hero-title">Plan de Entrenamiento<br><em id="student-objective-text">Cargando…</em></h1>
   <p class="hero-sub" id="hero-subtitle">Mesociclo de recomposición corporal diseñado por el <strong>Coach JP</strong> — hipertrofia adaptada a la longevidad y seguridad articular, con cierre metabólico controlado según indicación médica.</p>
   <div class="mesociclo-box rm-calc-box">
@@ -540,13 +766,13 @@
   </div>
   <div class="mesociclo-box" id="mesociclo-content">
     <h3>Metodología: Glúteo/Pierna + Torso Estético + Core, 5 días</h3>
-    <p>Frecuencia 5 días/semana con bloque final opcional de HIIT/cardio metabólico de bajo impacto (según indicación médica). Los días se van sumando a la app a medida que se aprueban en la Fase 1 de texto — hoy está disponible el <strong>Día 1</strong>.</p>
+    <p>Frecuencia 5 días/semana con bloque final opcional de HIIT/cardio metabólico de bajo impacto (según indicación médica). Los 5 días del mesociclo ya están cargados y disponibles en la app.</p>
     <ul id="mesociclo-weeks">
       <li class="day-training"><span class="week-num">L</span><span><strong>Lunes — Día 1, Glúteo/Femorales:</strong> bisagra de cadera e isquiotibiales-dominante, 100% en máquina/polea/apoyo torácico.</span></li>
-      <li class="day-pending"><span class="week-num">M</span><span><strong>Martes — Día 2:</strong> pendiente de definición conjunta.</span></li>
-      <li class="day-pending"><span class="week-num">X</span><span><strong>Miércoles — Día 3:</strong> pendiente de definición conjunta.</span></li>
-      <li class="day-pending"><span class="week-num">J</span><span><strong>Jueves — Día 4:</strong> pendiente de definición conjunta.</span></li>
-      <li class="day-pending"><span class="week-num">V</span><span><strong>Viernes — Día 5:</strong> pendiente de definición conjunta.</span></li>
+      <li class="day-training"><span class="week-num">M</span><span><strong>Martes — Día 2, Torso A + Abs:</strong> espalda alta, deltoide lateral/posterior y brazos.</span></li>
+      <li class="day-training"><span class="week-num">X</span><span><strong>Miércoles — Día 3, Piernas:</strong> cuádriceps-dominante + glúteo medio.</span></li>
+      <li class="day-training"><span class="week-num">J</span><span><strong>Jueves — Día 4, Torso B + Abs:</strong> deltoide anterior, dorsal ancho y brazos en estiramiento.</span></li>
+      <li class="day-training"><span class="week-num">V</span><span><strong>Viernes — Día 5, Glúteo Específico + Core:</strong> especialización de glúteo medio/mínimo y core ampliado.</span></li>
       <li class="day-rest"><span class="week-num">S</span><span><strong>Sábado:</strong> descanso.</span></li>
       <li class="day-rest"><span class="week-num">D</span><span><strong>Domingo:</strong> descanso.</span></li>
     </ul>
@@ -721,6 +947,383 @@ const workouts = [
       tips: "Los dos primeros bloques van con foco en control de tempo y RPE 7-8; a partir del Bloque 3 se usa biset/triset para ganar densidad sin perder calidad de ejecución ni comprometer la respiración.",
       strategies: "24 series efectivas de fuerza en los 4 bloques principales. Cero ejercicios de bisagra libre sin guía. Cero impacto o despegue bipodal en toda la sesión, incluyendo el bloque HIIT final."
     }
+  },
+  {
+    id: "dia2-torso-a-abs",
+    title: "DÍA 2 — TORSO A + ABS",
+    subtitle: "Espalda Alta, Deltoide Lateral/Posterior y Brazos",
+    discipline: "Hipertrofia Segura — Torso Estético",
+    level: "Día 2",
+    levelSlug: "dia2",
+    desc: "Remo y jalón sentados como ejes de espalda, biset de deltoide lateral/posterior, triset de pecho tonificado y brazos, cierre de core anti-rotación/anti-extensión y HIIT bajo impacto.",
+    duration: { base: 60, full: 75 },
+    safetyAlerts: [
+      "Todo el trabajo de espalda y hombro es en máquina/polea sentada — cero remo o press libre de pie que exija estabilización espinal.",
+      "Core trabajado exclusivamente en formato anti-rotación (Pallof) y anti-extensión (plancha), sin flexión de columna bajo carga.",
+      "RPE tope 7-8 en todos los bloques de fuerza, sin llegar al fallo."
+    ],
+    warmup: [
+      { name: "El Mejor Estiramiento del Mundo (World's Greatest Stretch)", reps: "5 rep/lado", yt: "-CiWQ2IvY34" },
+      { name: "Retracciones Escapulares Colgado (Scapular Pull-ups)", reps: "2x10", yt: "pE8PJsWEV7k" },
+      { name: "Rotación Externa en Polea (Cable External Rotation)", reps: "2x12/lado, muy liviana", yt: "fuWq7fg74dc" }
+    ],
+    main: [
+      {
+        title: "Bloque 1 — Remo Sentado Agarre Estrecho",
+        format: "straight",
+        restSeconds: 120,
+        tips: "Apoyo lumbar completo en el respaldo de la máquina. Pecho arriba, tirar con los codos (no con las manos), pico de contracción con retracción escapular 1s. Exhalar al tirar, inhalar al volver.",
+        objetivo: "Tensión mecánica en espalda alta/media con la columna completamente apoyada — ejercicio ancla del día.",
+        sensacion: "Sensación de 'apretar un lápiz entre los omóplatos' en el punto alto de cada repetición.",
+        exercises: [
+          { name: "Remo Sentado Agarre Estrecho", yt: "E7hwROyG3qo", sets: 3, reps: "3x8-10", tempo: "3110", rpe: "RPE 7-8" }
+        ]
+      },
+      {
+        title: "Bloque 2 — Jalón al Pecho Agarre Estrecho",
+        format: "straight",
+        restSeconds: 100,
+        tips: "Sentada, escápulas deprimidas antes de iniciar el tirón, codos hacia abajo y atrás, sin usar impulso de torso.",
+        objetivo: "Dorsal proporcionado en tracción vertical guiada, complementando el patrón horizontal del Bloque 1.",
+        sensacion: "El dorsal 'tira' de los codos hacia abajo, no las manos.",
+        exercises: [
+          { name: "Jalón al Pecho Agarre Estrecho", yt: "jXRxMJhOCc0", sets: 3, reps: "3x10-12", tempo: "3110" }
+        ]
+      },
+      {
+        title: "Bloque 3 — Deltoide Lateral + Deltoide Posterior",
+        format: "biset",
+        restSeconds: 90,
+        tips: "Peso liviano a propósito. Core firme, sin balancear el torso para generar impulso. En el cruce de cables, tirar desde el omóplato, no desde la mano.",
+        objetivo: "Deltoide lateral (amplitud de hombros) con deltoide posterior sosteniendo el equilibrio postural.",
+        sensacion: "Ardor progresivo en la parte lateral del hombro; en el cruce de cables, contracción entre los omóplatos.",
+        exercises: [
+          { label: "A1", name: "Elevaciones Laterales con Mancuernas", yt: "Kl3LEzQ5Zqs", sets: 3, reps: "3x12-15", tempo: "2020" },
+          { label: "A2", name: "Cruce de Cables Deltoides Posterior", yt: "nlkF7_2O_Lw", sets: 3, reps: "3x12-15", tempo: "2020" }
+        ]
+      },
+      {
+        title: "Bloque 4 — Pecho Tonificado + Brazos",
+        format: "triset",
+        restSeconds: 80,
+        tips: "En el press, carga moderada y control total. En curl y extensión, el codo permanece fijo durante todo el recorrido, sin balanceo.",
+        objetivo: "Pecho tonificado sin sobrecarga de volumen + brazos definidos, cerrando el torso del día — todo en máquina/polea.",
+        sensacion: "Ardor progresivo y localizado en cada músculo, sin ayuda de impulso.",
+        exercises: [
+          { label: "A1", name: "Press de Pecho en Máquina", yt: "JXJmPXlqwh0", sets: 3, reps: "3x10-12", tempo: "3110" },
+          { label: "A2", name: "Curl de Bíceps con Mancuernas", yt: "MKWBV29S6c0", sets: 3, reps: "3x10-12", tempo: "3110" },
+          { label: "A3", name: "Extensión Tríceps Polea Alta con Cuerda", yt: "1FoWlRS2Edc", sets: 3, reps: "3x10-12", tempo: "2110" }
+        ]
+      }
+    ],
+    hiit: {
+      title: "HIIT / Cardio Metabólico Controlado",
+      rounds: 8,
+      workSeconds: 30,
+      restSeconds: 30,
+      stations: ["Bici Estática / Airbike", "Remo en Ergómetro"],
+      tips: "Respiración continua obligatoria — exhalar en cada ciclo, jamás retener el aire. Alternativa sin equipo: marcha rápida en el lugar con elevación de rodilla controlada (sin salto).",
+      objetivo: "Estímulo metabólico/cardiovascular controlado y de bajo impacto para cerrar la sesión, según indicación médica.",
+      sensacion: "Esfuerzo cardiovascular elevado pero conversacional al final de cada bloque de trabajo — nunca al máximo posible."
+    },
+    core: {
+      exercises: [
+        { name: "Press Pallof en Polea", yt: "-0N2xTi69t8", sets: 3, reps: "3x10/lado", restSeconds: 45, tips: "Core firme, caderas y hombros mirando siempre al frente — la resistencia de la polea intenta rotarte, vos se lo impedís.", sensacion: "Contracción isométrica intensa en el abdomen lateral (oblicuos), no un movimiento de brazos." },
+        { name: "Plancha Abdominal Tradicional (Plank)", yt: "xe2MXatLTUw", sets: 3, reps: "3x30-40s", restSeconds: 45, tips: "Cuerpo en línea recta de cabeza a talones, glúteos y abdomen apretados activamente. Sin flexión de columna.", sensacion: "Temblor progresivo en el abdomen profundo a medida que pasan los segundos." }
+      ]
+    },
+    cooldown: [
+      "Estiramiento de dorsal ancho en cuadrupedia (child's pose con brazos extendidos) — 30s",
+      "Estiramiento de deltoide posterior cruzando brazo al pecho — 20s/lado",
+      "Estiramiento de pectoral en marco de puerta — 20s/lado",
+      "Estiramiento de bíceps/tríceps en pared — 20s/lado c/u"
+    ],
+    technicalAnalysis: {
+      objectives: "Espalda alta (tracción horizontal y vertical) y deltoide lateral/posterior como ejes del día, con pecho y brazos como acompañamiento — 100% en máquina/polea sentada.",
+      tips: "El pecho se entrena con volumen moderado a propósito — la prioridad estética de la sesión es el deltoide y la espalda alta.",
+      strategies: "22 series efectivas de fuerza + 6 de core. Cero carga axial libre de pie en todo el tren superior."
+    }
+  },
+  {
+    id: "dia3-piernas-cuadriceps",
+    title: "DÍA 3 — PIERNAS (CUÁDRICEPS-DOMINANTE)",
+    subtitle: "Cuádriceps + Glúteo Medio",
+    discipline: "Hipertrofia Segura — Glúteo y Pierna",
+    level: "Día 3",
+    levelSlug: "dia3",
+    desc: "Prensa de piernas inclinada como eje (reemplaza sentadilla trasera libre), biset de extensión/step-up, sentadilla sissy como aislamiento, triset de glúteo medio/aductor/gemelo.",
+    duration: { base: 60, full: 75 },
+    safetyAlerts: [
+      "Sentadilla Trasera con Barra sustituida por Prensa de Piernas Inclinada 45° como ejercicio ancla: mismo estímulo de cuádriceps, con respaldo completo de espalda y sin carga axial libre en bipedestación.",
+      "Ningún ejercicio de esta sesión requiere despegue de ambos pies del suelo — protección constante del 5º metatarso.",
+      "Sin bloque de core este día: el foco recae 100% en el tren inferior para no acumular fatiga innecesaria."
+    ],
+    warmup: [
+      { name: "El Mejor Estiramiento del Mundo (World's Greatest Stretch)", reps: "5 rep/lado", yt: "-CiWQ2IvY34" },
+      { name: "Fire Hydrants con Banda (Banded Fire Hydrants)", reps: "2x12/lado", yt: "JUBtuuhPdggg" },
+      { name: "Sentadilla Isométrica Media con Abducción de Banda", reps: "2x30s, banda liviana", yt: "4QHr6xPHKQE" }
+    ],
+    main: [
+      {
+        title: "Bloque 1 — Prensa de Piernas Inclinada 45°",
+        format: "straight",
+        restSeconds: 150,
+        tips: "🛡️ Ancla de cuádriceps con respaldo completo, sin la carga axial libre de una sentadilla trasera. Pies a la altura de los hombros, no bloquear rodillas arriba, bajar hasta que la zona lumbar empiece a despegarse del respaldo (sin pasarse). Exhalar al empujar.",
+        objetivo: "Máximo estímulo de cuádriceps con cero exigencia de estabilización espinal.",
+        sensacion: "El cuádriceps trabaja en todo el recorrido, rodillas siguiendo la dirección de los pies sin colapsar hacia adentro.",
+        exercises: [
+          { name: "Prensa de Piernas Inclinada 45°", yt: "EotSw18oR9w", sets: 3, reps: "3x8-10", tempo: "3110", rpe: "RPE 7-8" }
+        ]
+      },
+      {
+        title: "Bloque 2 — Extensión de Cuádriceps + Step-Up Enfocado en Cuádriceps",
+        format: "biset",
+        restSeconds: 100,
+        tips: "En la extensión, pausa de 1s en el punto de máxima contracción arriba. En el step-up, torso erguido, empuje con el talón de la pierna de arriba, apoyo bipodal completo en cada fase — sin salto ni impulso.",
+        objetivo: "Aislamiento de cuádriceps + trabajo unilateral con énfasis cuádriceps-dominante (torso más erguido que en la búlgara del Día 1).",
+        sensacion: "Ardor localizado y progresivo en el cuádriceps en ambos ejercicios.",
+        exercises: [
+          { label: "A1", name: "Extensiones de Cuádriceps en Máquina", yt: "uM86QE59Tgc", sets: 3, reps: "3x12-15", tempo: "2110" },
+          { label: "A2", name: "Step-Up Enfocado en Cuádriceps", yt: "Ey2H3-zmzSk", sets: 3, reps: "3x10/pierna", tempo: "2110" }
+        ]
+      },
+      {
+        title: "Bloque 3 — Sentadilla Sissy",
+        format: "straight",
+        restSeconds: 90,
+        tips: "Sostenerse de un soporte fijo para controlar el equilibrio. Priorizar rango de movimiento sobre velocidad — es normal que arda antes de completar las repeticiones.",
+        objetivo: "Aislamiento de cuádriceps con estiramiento profundo, carga corporal/liviana, sin exigencia axial.",
+        sensacion: "Estiramiento y ardor intenso en la parte frontal del muslo.",
+        exercises: [
+          { name: "Sentadilla Sissy", yt: "JZ2BGYUa-3M", sets: 3, reps: "3x8-12", tempo: "2110" }
+        ]
+      },
+      {
+        title: "Bloque 4 — Glúteo Medio + Aductor + Gemelo",
+        format: "triset",
+        restSeconds: 80,
+        tips: "En la abducción reclinada, empujar con el costado de la cadera, no con el pie. En aductores, movimiento controlado sin balanceo. En la elevación de talón, estiramiento completo abajo antes de cada subida.",
+        objetivo: "Cierre de glúteo medio/mínimo, aductores para equilibrio de cadera y gemelo directo — todo guiado en máquina.",
+        sensacion: "En la abducción, sensación en el costado de la cadera. En aductores, trabajo en la parte interna del muslo.",
+        exercises: [
+          { label: "A1", name: "Abducción de Cadera en Máquina Reclinado", yt: "oFLGX54QgpQ", sets: 3, reps: "3x15", tempo: "2020" },
+          { label: "A2", name: "Aductores en Máquina", yt: "tu4o4quPv2k", sets: 3, reps: "3x15", tempo: "2020" },
+          { label: "A3", name: "Elevación de Talones de Pie en Máquina Smith", yt: "-IURfiupLoE", sets: 3, reps: "3x12-15", tempo: "2111" }
+        ]
+      }
+    ],
+    hiit: {
+      title: "HIIT / Cardio Metabólico Controlado",
+      rounds: 8,
+      workSeconds: 30,
+      restSeconds: 30,
+      stations: ["Bici Estática / Airbike", "Remo en Ergómetro"],
+      tips: "Respiración continua obligatoria — exhalar en cada ciclo, jamás retener el aire. Alternativa sin equipo: step-ups lentos sobre un escalón bajo, apoyo bipodal constante.",
+      objetivo: "Estímulo metabólico/cardiovascular controlado y de bajo impacto para cerrar la sesión, según indicación médica.",
+      sensacion: "Esfuerzo cardiovascular elevado pero conversacional al final de cada bloque de trabajo — nunca al máximo posible."
+    },
+    cooldown: [
+      "Estiramiento de cuádriceps de pie — 30s/lado",
+      "Estiramiento de glúteo tipo figura 4 — 30s/lado",
+      "Estiramiento de aductor tipo mariposa — 30s",
+      "Estiramiento de gemelo en pared — 30s/lado"
+    ],
+    technicalAnalysis: {
+      objectives: "Dominante de rodilla (cuádriceps) como eje, 100% en formato máquina con respaldo, con glúteo medio y aductores como cierre.",
+      tips: "Priorizar técnica y rango completo sobre carga — la prensa y la sissy permiten cargar el cuádriceps sin ningún riesgo de compensación lumbar.",
+      strategies: "20 series efectivas de fuerza. Cero sentadilla libre pesada en toda la sesión."
+    }
+  },
+  {
+    id: "dia4-torso-b-abs",
+    title: "DÍA 4 — TORSO B + ABS",
+    subtitle: "Deltoide Anterior, Dorsal Ancho y Brazos en Estiramiento",
+    discipline: "Hipertrofia Segura — Torso Estético",
+    level: "Día 4",
+    levelSlug: "dia4",
+    desc: "Press de hombros sentado y dominadas asistidas como ejes (reemplazan press militar libre de pie), biset de deltoide rotacional + salud de hombro, triset de espalda media y brazos, cierre de core y HIIT.",
+    duration: { base: 60, full: 75 },
+    safetyAlerts: [
+      "Press Militar de Pie con Barra sustituido por Press de Hombros Sentado/en Máquina: mismo estímulo de deltoide anterior, con respaldo dorsal completo y sin carga axial de pie.",
+      "Dominadas Estrictas reemplazadas por Dominadas Asistidas en Máquina, para eliminar el balanceo/kipping que podría generar compensación lumbar.",
+      "El Press Arnold se ejecuta sentado con respaldo, nunca de pie con carga moderada-alta."
+    ],
+    warmup: [
+      { name: "El Mejor Estiramiento del Mundo (World's Greatest Stretch)", reps: "5 rep/lado", yt: "-CiWQ2IvY34" },
+      { name: "Retracciones Escapulares Colgado (Scapular Pull-ups)", reps: "2x10", yt: "pE8PJsWEV7k" },
+      { name: "Rotación Externa en Polea (Cable External Rotation)", reps: "2x12/lado, muy liviana", yt: "fuWq7fg74dc" }
+    ],
+    main: [
+      {
+        title: "Bloque 1 — Press de Hombros Sentado / en Máquina",
+        format: "straight",
+        restSeconds: 120,
+        tips: "🛡️ Espalda completamente apoyada en el respaldo. La carga sube sin arquear la espalda para 'ayudar' el empuje. Exhalar al empujar hacia arriba.",
+        objetivo: "Tensión mecánica en deltoide anterior/medio vía empuje vertical, con cero exigencia de estabilización espinal de pie.",
+        sensacion: "El trabajo se siente en la parte frontal y media del hombro, con la espalda pasiva y apoyada.",
+        exercises: [
+          { name: "Press de Hombros en Máquina", yt: "6v4nrRVySj0", sets: 3, reps: "3x8-10", tempo: "2110", rpe: "RPE 7-8" }
+        ]
+      },
+      {
+        title: "Bloque 2 — Dominadas Asistidas en Máquina",
+        format: "straight",
+        restSeconds: 120,
+        tips: "🛡️ Ajustar la asistencia de la máquina a un nivel que permita técnica estricta, sin balanceo de piernas ni impulso — mentón claramente sobre la barra arriba.",
+        objetivo: "Sobrecarga en dorsal ancho vía tracción vertical guiada y controlada.",
+        sensacion: "Iniciá el tirón sintiendo el dorsal 'empujando los codos hacia abajo', no solo flexionando el codo.",
+        exercises: [
+          { name: "Dominadas Asistidas en Máquina", yt: "BOqrRMjxkj8", sets: 3, reps: "3x8-10", tempo: "3011" }
+        ]
+      },
+      {
+        title: "Bloque 3 — Deltoide Rotacional + Salud de Hombro",
+        format: "biset",
+        restSeconds: 100,
+        tips: "🛡️ Press Arnold sentado, con respaldo — nunca de pie con carga significativa. Rotación de muñeca continua y controlada. En el Face Pull, codos altos y apretar los omóplatos al final del recorrido.",
+        objetivo: "Deltoide anterior/medio bajo ángulo rotacional + salud y equilibrio postural de hombro.",
+        sensacion: "En el Arnold, la sensación rota junto con la muñeca por todo el deltoide. En el Face Pull, sensación de 'separar' las manos hacia afuera y atrás.",
+        exercises: [
+          { label: "A1", name: "Press Arnold (sentado, con respaldo)", yt: "pQDrcNoDNVM", sets: 3, reps: "3x8-10", tempo: "2110", rpe: "RPE 7" },
+          { label: "A2", name: "Face Pull con Cuerda en Polea Alta", yt: "IeOqdw9WI90", sets: 3, reps: "3x15", tempo: "2020" }
+        ]
+      },
+      {
+        title: "Bloque 4 — Tracción Horizontal + Brazos en Estiramiento",
+        format: "triset",
+        restSeconds: 90,
+        tips: "En el remo, pecho apoyado en la máquina y pico de contracción con retracción escapular. En curl y extensión, priorizar el rango de estiramiento máximo por sobre la carga.",
+        objetivo: "Volumen de espalda media + brazos trabajados en estiramiento, con apoyo torácico total.",
+        sensacion: "En el remo, foco en 'apretar' la espalda media al final de cada repetición. En curl y extensión, un estiramiento fuerte al inicio de cada repetición.",
+        exercises: [
+          { label: "A1", name: "Remo en Máquina con Barra T", yt: "edZUQEV8DBQ", sets: 3, reps: "3x8-10", tempo: "2111" },
+          { label: "A2", name: "Curl de Bíceps en Banco Inclinado", yt: "uCUaRFlA9vE", sets: 3, reps: "3x10-12", tempo: "3110" },
+          { label: "A3", name: "Extensión Tríceps Tras Nuca con Cuerda", yt: "9Ark9S11uXw", sets: 3, reps: "3x10-12", tempo: "2110" }
+        ]
+      }
+    ],
+    hiit: {
+      title: "HIIT / Cardio Metabólico Controlado",
+      rounds: 8,
+      workSeconds: 30,
+      restSeconds: 30,
+      stations: ["Bici Estática / Airbike", "Remo en Ergómetro"],
+      tips: "Respiración continua obligatoria — exhalar en cada ciclo, jamás retener el aire. Alternativa sin equipo: marcha rápida en el lugar con elevación de rodilla controlada (sin salto).",
+      objetivo: "Estímulo metabólico/cardiovascular controlado y de bajo impacto para cerrar la sesión, según indicación médica.",
+      sensacion: "Esfuerzo cardiovascular elevado pero conversacional al final de cada bloque de trabajo — nunca al máximo posible."
+    },
+    core: {
+      exercises: [
+        { name: "Anti-Rotación con Landmine (Landmine Anti-Rotation)", yt: "oHzUVCjiDmA", sets: 3, reps: "3x10/lado", restSeconds: 45, tips: "Caderas y hombros fijos mirando al frente — la resistencia de la barra intenta rotarte desde el pecho, vos se lo impedís con el core.", sensacion: "Contracción isométrica intensa en el abdomen y oblicuos, sin mover la cadera." },
+        { name: "Plancha Abdominal Tradicional (Plank)", yt: "xe2MXatLTUw", sets: 3, reps: "3x30-40s", restSeconds: 45, tips: "Cuerpo en línea recta de cabeza a talones, glúteos y abdomen apretados activamente. Sin flexión de columna.", sensacion: "Temblor progresivo en el abdomen profundo a medida que pasan los segundos." }
+      ]
+    },
+    cooldown: [
+      "Estiramiento de dorsal en cuadrupedia — 30s",
+      "Estiramiento de deltoide anterior en marco de puerta con brazo elevado — 20s/lado",
+      "Estiramiento de bíceps/tríceps en pared — 20s/lado c/u"
+    ],
+    technicalAnalysis: {
+      objectives: "Empuje vertical (deltoide anterior/medio) y tracción vertical (dorsal ancho) como ejes, ambos en formato sentado/asistido — completa los ángulos del Día 2.",
+      tips: "La variación de ángulo (fijo vs. rotacional) maximiza el desarrollo del deltoide sin necesidad de cargas libres de pie.",
+      strategies: "22 series efectivas de fuerza + 6 de core. Cero empuje vertical de pie sin apoyo en toda la sesión."
+    }
+  },
+  {
+    id: "dia5-gluteo-especifico-core",
+    title: "DÍA 5 — GLÚTEO ESPECÍFICO + CORE",
+    subtitle: "Glúteo Medio/Mínimo y Core Ampliado",
+    discipline: "Hipertrofia Segura — Glúteo y Pierna",
+    level: "Día 5",
+    levelSlug: "dia5",
+    desc: "Puente de glúteo KAS y abducción unilateral como ejes, biset de aislamiento de glúteo en dos planos, triset unilateral/rana/gemelo, cierre de core ampliado y HIIT bajo impacto.",
+    duration: { base: 55, full: 70 },
+    safetyAlerts: [
+      "El Puente de Glúteo KAS tiene menor demanda espinal que el Hip Thrust del Día 1 — apoyo completo en el piso, ideal para el quinto día de la semana.",
+      "Cero ejercicios con despegue bipodal o aterrizaje lateral en toda la sesión, incluyendo el core ampliado.",
+      "Core ampliado 100% en formato anti-rotación (Pallof), acarreo cargado (Suitcase Carry) y anti-extensión (plancha) — sin ninguna flexión de columna bajo carga."
+    ],
+    warmup: [
+      { name: "El Mejor Estiramiento del Mundo (World's Greatest Stretch)", reps: "5 rep/lado", yt: "-CiWQ2IvY34" },
+      { name: "Fire Hydrants con Banda (Banded Fire Hydrants)", reps: "2x12/lado", yt: "JUBtuuhPdggg" },
+      { name: "Sentadilla Isométrica Media con Abducción de Banda", reps: "2x30s, banda liviana", yt: "4QHr6xPHKQE" }
+    ],
+    main: [
+      {
+        title: "Bloque 1 — Puente de Glúteo KAS con Barra",
+        format: "straight",
+        restSeconds: 100,
+        tips: "🛡️ La barra apoya sobre la cadera (usar almohadilla), talones cerca de los glúteos, empuje a través del talón y apriete sostenido arriba. Cuerpo completamente apoyado en el piso — cero exigencia de estabilización libre.",
+        objetivo: "Tensión mecánica máxima en glúteo con la menor demanda espinal posible del mesociclo.",
+        sensacion: "La pausa arriba debe sentirse como una contracción máxima y sostenida de glúteo, no un simple 'toque y bajada'.",
+        exercises: [
+          { name: "Puente de Glúteo KAS con Barra", yt: "pcympJm2Nro", sets: 3, reps: "3x8-10", tempo: "2020", rpe: "RPE 7-8" }
+        ]
+      },
+      {
+        title: "Bloque 2 — Abducción de Cadera Unilateral en Polea",
+        format: "straight",
+        restSeconds: 80,
+        tips: "Torso estable, el movimiento nace pura y exclusivamente de la cadera — sin balancear el torso para 'ayudar'.",
+        objetivo: "Aislamiento directo y unilateral de glúteo medio.",
+        sensacion: "Sensación localizada en el costado de la cadera, sin compensación de torso.",
+        exercises: [
+          { name: "Abducción de Cadera Unilateral en Polea", yt: "tSNl_R9qgfE", sets: 3, reps: "3x15/lado", tempo: "2020" }
+        ]
+      },
+      {
+        title: "Bloque 3 — Aislamiento de Glúteo en Dos Planos",
+        format: "biset",
+        restSeconds: 80,
+        tips: "En el kickback, la pelvis permanece fija — el movimiento es solo de la pierna en extensión de cadera. En la patada lateral, evitar rotar el torso para ganar rango.",
+        objetivo: "Combina extensión y abducción de cadera en la misma ronda, atacando el glúteo desde dos planos distintos.",
+        sensacion: "Ardor localizado en el glúteo en ambos ejercicios, sin ayuda de impulso ni rotación de cadera.",
+        exercises: [
+          { label: "A1", name: "Kickback de Glúteo en Polea a 45°", yt: "-SX0P8dEbWw", sets: 3, reps: "3x12-15/lado", tempo: "2020" },
+          { label: "A2", name: "Patada Lateral Glúteo Medio", yt: "tSNl_R9qgfE", sets: 3, reps: "3x12-15/lado", tempo: "2020" }
+        ]
+      },
+      {
+        title: "Bloque 4 — Unilateral + Rana + Gemelo",
+        format: "triset",
+        restSeconds: 80,
+        tips: "En el step-up, empujar con el talón de la pierna de arriba, sin impulsarte con la de abajo. En el Frog Pump, rango corto pero con apriete máximo arriba, apoyo constante de ambos pies/rodillas en el piso.",
+        objetivo: "Cierre unilateral para simetría + un ejercicio de alta frecuencia de contracción que satura las fibras de glúteo medio.",
+        sensacion: "En el step-up, el glúteo de la pierna de arriba hace todo el trabajo. En el Frog Pump, contracción rápida y repetida en glúteo medio/mínimo.",
+        exercises: [
+          { label: "A1", name: "Step-Up Enfocado en Glúteo", yt: "Ey2H3-zmzSk", sets: 3, reps: "3x10/pierna", tempo: "2110" },
+          { label: "A2", name: "Puentes de Glúteo Tipo Rana (Frog Pumps)", sets: 3, reps: "3x15-20", tempo: "2020" },
+          { label: "A3", name: "Elevación de Talones a Una Pierna en Polea", yt: "epF7bNRSa-U", sets: 3, reps: "3x12-15/pierna", tempo: "2111" }
+        ]
+      }
+    ],
+    hiit: {
+      title: "HIIT / Cardio Metabólico Controlado",
+      rounds: 8,
+      workSeconds: 30,
+      restSeconds: 30,
+      stations: ["Bici Estática / Airbike", "Remo en Ergómetro"],
+      tips: "Respiración continua obligatoria — exhalar en cada ciclo, jamás retener el aire. Cierre de la semana: escuchar al cuerpo y bajar la intensidad si aparece fatiga acumulada.",
+      objetivo: "Estímulo metabólico/cardiovascular controlado y de bajo impacto para cerrar la semana, según indicación médica.",
+      sensacion: "Esfuerzo cardiovascular elevado pero conversacional al final de cada bloque de trabajo — nunca al máximo posible."
+    },
+    core: {
+      exercises: [
+        { name: "Press Pallof en Polea", yt: "-0N2xTi69t8", sets: 3, reps: "3x10/lado", restSeconds: 40, tips: "Core firme, caderas y hombros mirando siempre al frente.", sensacion: "Contracción isométrica intensa en el abdomen lateral (oblicuos)." },
+        { name: "Caminata Valija Unilateral (Suitcase Carry)", yt: "iTjwbts8Djw", sets: 3, reps: "3x20-30m/lado", restSeconds: 45, tips: "Peso liviano-moderado en una sola mano, torso recto sin inclinarse hacia el lado cargado — el core anti-inclinación lateral es el que trabaja.", sensacion: "Tensión constante en el oblicuo del lado contrario al peso, resistiendo la inclinación." },
+        { name: "Plancha Abdominal Tradicional (Plank)", yt: "xe2MXatLTUw", sets: 3, reps: "3x30-40s", restSeconds: 40, tips: "Cuerpo en línea recta de cabeza a talones, glúteos y abdomen apretados activamente.", sensacion: "Temblor progresivo en el abdomen profundo a medida que pasan los segundos." }
+      ]
+    },
+    cooldown: [
+      "Estiramiento de glúteo tipo figura 4 — 30s/lado",
+      "Estiramiento de aductor tipo mariposa — 30s",
+      "Estiramiento de gemelo en pared — 30s/lado"
+    ],
+    technicalAnalysis: {
+      objectives: "Especialización de glúteo medio/mínimo desde múltiples planos + core ampliado por ser prioridad para la alumna, cerrando la semana con la mayor densidad de trabajo de glúteo medio.",
+      tips: "Mantener la carga moderada y priorizar la conexión mente-músculo sobre el peso — es el quinto día de estímulo de la semana.",
+      strategies: "20 series efectivas de fuerza + 9 de core ampliado. 100% en polea/máquina/piso con apoyo, cero impacto en todo el mesociclo."
+    }
   }
 ];
 /* ============================================================
@@ -771,20 +1374,79 @@ function updateTimerDisplay(el, seconds) {
   const display = el.querySelector('.ex-timer-display');
   if (display) display.textContent = formatTime(seconds);
 }
-function playTimerBeep(freq) {
+/* ============================================================
+   AUDIO — Web Audio API, un único AudioContext compartido.
+   Se desbloquea de forma SÍNCRONA en el primer tap del usuario
+   (crítico para iOS) y se reutiliza para todos los beeps
+   posteriores, incluso los disparados por setInterval.
+   ============================================================ */
+let sharedAudioCtx = null;
+function ensureAudioCtx() {
+  if (!sharedAudioCtx) {
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) return null;
+    sharedAudioCtx = new Ctor();
+  } else if (sharedAudioCtx.state === 'suspended') {
+    sharedAudioCtx.resume();
+  }
+  return sharedAudioCtx;
+}
+function unlockAudio() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    // Oscilador de ganancia casi nula solo para desbloquear el contexto en iOS.
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.frequency.value = freq || 880;
-    gain.gain.setValueAtTime(0.16, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.4);
-    osc.onended = () => ctx.close();
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.05);
   } catch (e) { /* noop */ }
+}
+function playBeep(freq, dur, peakGain, delay) {
+  try {
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    const start = ctx.currentTime + (delay || 0);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(peakGain, start + 0.012);
+    gain.gain.setValueAtTime(peakGain, start + Math.max(dur - 0.04, 0.012));
+    gain.gain.linearRampToValueAtTime(0.0001, start + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + dur + 0.03);
+  } catch (e) { console.warn('playBeep falló:', e); }
+}
+/* Beep simple usado por el ex-timer (rest/work por ejercicio) — mismo
+   motor de sonido (osc sine + envolvente lineal), sin tremolo/buzzer. */
+function playTimerBeep(freq) {
+  playBeep(freq || 1568, 0.32, 0.65, 0);
+}
+/* Cuenta regresiva 3-2-1 — tono corto e idéntico, previsible */
+function playCountdownTick() {
+  playBeep(880, 0.12, 0.6, 0);
+}
+/* GO! — arranca el trabajo */
+function playGoBeep() {
+  playBeep(1568, 0.32, 0.65, 0);
+}
+/* STOP! — arranca el descanso */
+function playStopBeep() {
+  playBeep(440, 0.45, 0.65, 0);
+}
+/* Fin de todas las rondas — triple beep agudo */
+function playFinishBeeps() {
+  playBeep(1568, 0.16, 0.65, 0);
+  playBeep(1568, 0.16, 0.65, 0.22);
+  playBeep(1568, 0.35, 0.65, 0.44);
 }
 async function startExTimer(el) {
   el.dataset.running = '1';
@@ -802,6 +1464,7 @@ async function startExTimer(el) {
       finishExTimer(el);
       return;
     }
+    if (remaining <= 3) playCountdownTick();
     el.dataset.remaining = String(remaining);
     updateTimerDisplay(el, remaining);
   }, 1000);
@@ -890,6 +1553,7 @@ document.getElementById('modal-exercises-content').addEventListener('click', (e)
   const hiitReset = e.target.closest('.hiit-reset');
   if (toggleBtn) {
     e.stopPropagation();
+    unlockAudio(); // desbloqueo síncrono en el gesto real del usuario (crítico en iOS)
     toggleExTimer(toggleBtn.closest('.ex-timer'));
   } else if (resetBtn) {
     e.stopPropagation();
@@ -899,6 +1563,7 @@ document.getElementById('modal-exercises-content').addEventListener('click', (e)
     toggleSetCheck(setBtn);
   } else if (hiitToggle) {
     e.stopPropagation();
+    unlockAudio(); // desbloqueo síncrono en el gesto real del usuario (crítico en iOS)
     toggleHiitTimer(hiitToggle.closest('.hiit-timer'));
   } else if (hiitReset) {
     e.stopPropagation();
@@ -944,13 +1609,23 @@ function refreshAllBlockBadges() {
   });
 }
 /* ============================================================
-   TEMPORIZADOR DE INTERVALOS HIIT (auto-ciclado trabajo/descanso)
+   TEMPORIZADOR DE INTERVALOS HIIT — reloj único estilo WOD timer
+   Fases: Preparate (10s) -> Trabajo -> Descanso -> Trabajo -> ...
+   hasta completar todas las rondas, con cuentavueltas automático.
    ============================================================ */
+const HIIT_PREPARE_SECONDS = 10;
 function hiitStationFor(el) {
   const stations = JSON.parse(el.dataset.stations || '[]');
   if (!stations.length) return '';
   const round = parseInt(el.dataset.round, 10);
   return stations[(round - 1) % stations.length];
+}
+function hiitPhaseTotal(el) {
+  const phase = el.dataset.phase;
+  if (phase === 'prepare') return HIIT_PREPARE_SECONDS;
+  if (phase === 'work') return parseInt(el.dataset.workSeconds, 10);
+  if (phase === 'rest') return parseInt(el.dataset.restSeconds, 10);
+  return 1;
 }
 function updateHiitUI(el) {
   const remaining = parseInt(el.dataset.remaining, 10);
@@ -958,18 +1633,35 @@ function updateHiitUI(el) {
   const rounds = parseInt(el.dataset.rounds, 10);
   const phase = el.dataset.phase;
   el.querySelector('.hiit-display').textContent = formatTime(remaining);
-  el.querySelector('.hiit-round-label').textContent = `Ronda ${round} / ${rounds}`;
-  el.querySelector('.hiit-phase-label').textContent = phase === 'work' ? '💪 Trabajo' : '😮‍💨 Descanso';
+  const roundLabelEl = el.querySelector('.hiit-round-label');
+  if (roundLabelEl) roundLabelEl.textContent = phase === 'prepare' ? 'Preparate' : `Ronda ${round} / ${rounds}`;
+  const phaseLabelEl = el.querySelector('.hiit-phase-label');
+  if (phaseLabelEl) {
+    phaseLabelEl.textContent = phase === 'prepare' ? '🕒 Preparate' : (phase === 'work' ? '💪 Trabajo' : '😮‍💨 Descanso');
+  }
+  el.classList.toggle('phase-prepare', phase === 'prepare');
   el.classList.toggle('phase-work', phase === 'work');
+  el.classList.toggle('phase-rest', phase === 'rest');
   const stationEl = el.querySelector('.hiit-station-label');
-  if (stationEl) stationEl.textContent = phase === 'work' ? hiitStationFor(el) : 'Respiración continua — sin retener el aire';
+  if (stationEl) {
+    stationEl.textContent = phase === 'prepare'
+      ? 'Prepará tu estación y tu respiración'
+      : (phase === 'work' ? hiitStationFor(el) : 'Respiración continua — sin retener el aire');
+  }
+  const fillEl = el.querySelector('.hiit-progress-fill');
+  if (fillEl) {
+    const total = hiitPhaseTotal(el);
+    const pct = total > 0 ? Math.max(0, Math.min(100, (remaining / total) * 100)) : 0;
+    fillEl.style.width = pct + '%';
+  }
 }
 async function startHiitTimer(el) {
+  if (el.dataset.phase === 'done') resetHiitTimer(el);
   el.dataset.running = '1';
   el.classList.add('running');
   el.classList.remove('finished');
   const btn = el.querySelector('.hiit-toggle');
-  if (btn) { btn.textContent = '❚❚ Pausar'; }
+  if (btn) { btn.textContent = '❚❚'; btn.setAttribute('aria-label', 'Pausar cronómetro'); }
   activeTimersCount++;
   await acquireWakeLock();
   const interval = setInterval(() => {
@@ -978,6 +1670,7 @@ async function startHiitTimer(el) {
       advanceHiitPhase(el);
       return;
     }
+    if (remaining <= 3) playCountdownTick();
     el.dataset.remaining = String(remaining);
     updateHiitUI(el);
   }, 1000);
@@ -987,16 +1680,25 @@ function advanceHiitPhase(el) {
   const phase = el.dataset.phase;
   const round = parseInt(el.dataset.round, 10);
   const rounds = parseInt(el.dataset.rounds, 10);
-  playTimerBeep(phase === 'work' ? 660 : 990);
-  if (navigator.vibrate) { try { navigator.vibrate(150); } catch (e) { /* noop */ } }
-  if (phase === 'work') {
+  if (phase === 'prepare') {
+    el.dataset.phase = 'work';
+    el.dataset.round = '1';
+    el.dataset.remaining = el.dataset.workSeconds;
+    playGoBeep();
+    if (navigator.vibrate) { try { navigator.vibrate(200); } catch (e) { /* noop */ } }
+    updateHiitUI(el);
+  } else if (phase === 'work') {
     el.dataset.phase = 'rest';
     el.dataset.remaining = el.dataset.restSeconds;
+    playStopBeep();
+    if (navigator.vibrate) { try { navigator.vibrate(200); } catch (e) { /* noop */ } }
     updateHiitUI(el);
   } else if (round < rounds) {
     el.dataset.phase = 'work';
     el.dataset.round = String(round + 1);
     el.dataset.remaining = el.dataset.workSeconds;
+    playGoBeep();
+    if (navigator.vibrate) { try { navigator.vibrate(200); } catch (e) { /* noop */ } }
     updateHiitUI(el);
   } else {
     finishHiitTimer(el);
@@ -1006,7 +1708,7 @@ function pauseHiitTimer(el) {
   el.dataset.running = '0';
   el.classList.remove('running');
   const btn = el.querySelector('.hiit-toggle');
-  if (btn) { btn.textContent = '▶ Iniciar'; }
+  if (btn) { btn.textContent = '▶'; btn.setAttribute('aria-label', 'Iniciar cronómetro'); }
   const interval = timerIntervals.get(el);
   if (interval) { clearInterval(interval); timerIntervals.delete(el); }
   activeTimersCount = Math.max(0, activeTimersCount - 1);
@@ -1017,24 +1719,30 @@ function finishHiitTimer(el) {
   if (interval) { clearInterval(interval); timerIntervals.delete(el); }
   el.dataset.running = '0';
   el.dataset.remaining = '0';
-  el.classList.remove('running');
+  el.dataset.phase = 'done';
+  el.classList.remove('running', 'phase-prepare', 'phase-work', 'phase-rest');
   el.classList.add('finished');
   const btn = el.querySelector('.hiit-toggle');
-  if (btn) { btn.textContent = '▶ Iniciar'; }
+  if (btn) { btn.textContent = '▶'; btn.setAttribute('aria-label', 'Reiniciar y comenzar de nuevo'); }
   el.querySelector('.hiit-display').textContent = '00:00';
-  el.querySelector('.hiit-phase-label').textContent = '✓ Completo';
+  const roundLabelEl = el.querySelector('.hiit-round-label');
+  if (roundLabelEl) roundLabelEl.textContent = `${el.dataset.rounds} / ${el.dataset.rounds} rondas`;
+  const phaseLabelEl = el.querySelector('.hiit-phase-label');
+  if (phaseLabelEl) phaseLabelEl.textContent = '✓ Completo';
   const stationEl = el.querySelector('.hiit-station-label');
   if (stationEl) stationEl.textContent = 'Bloque HIIT finalizado — vuelta a la calma respiratoria';
+  const fillEl = el.querySelector('.hiit-progress-fill');
+  if (fillEl) fillEl.style.width = '100%';
   activeTimersCount = Math.max(0, activeTimersCount - 1);
   releaseWakeLockIfIdle();
-  playTimerBeep(990);
+  playFinishBeeps();
   if (navigator.vibrate) { try { navigator.vibrate([200, 100, 200, 100, 200]); } catch (e) { /* noop */ } }
 }
 function resetHiitTimer(el) {
   pauseHiitTimer(el);
-  el.dataset.phase = 'work';
+  el.dataset.phase = 'prepare';
   el.dataset.round = '1';
-  el.dataset.remaining = el.dataset.workSeconds;
+  el.dataset.remaining = String(HIIT_PREPARE_SECONDS);
   el.classList.remove('finished');
   updateHiitUI(el);
 }
@@ -1044,14 +1752,15 @@ function toggleHiitTimer(el) {
 function renderHiitTimer(hiit) {
   const stationsJson = JSON.stringify(hiit.stations || []).replace(/"/g, '&quot;');
   return `
-    <div class="hiit-timer" data-work-seconds="${hiit.workSeconds}" data-rest-seconds="${hiit.restSeconds}" data-rounds="${hiit.rounds}" data-round="1" data-phase="work" data-remaining="${hiit.workSeconds}" data-running="0" data-stations="${stationsJson}">
-      <div class="hiit-round-label">Ronda 1 / ${hiit.rounds}</div>
-      <div class="hiit-phase-label">💪 Trabajo</div>
-      <div class="hiit-display">${formatTime(hiit.workSeconds)}</div>
-      <div class="hiit-station-label">${(hiit.stations || [])[0] || ''}</div>
+    <div class="hiit-timer phase-prepare" data-work-seconds="${hiit.workSeconds}" data-rest-seconds="${hiit.restSeconds}" data-rounds="${hiit.rounds}" data-round="1" data-phase="prepare" data-remaining="${HIIT_PREPARE_SECONDS}" data-running="0" data-stations="${stationsJson}">
+      <div class="hiit-round-label">Preparate</div>
+      <div class="hiit-phase-label">🕒 Preparate</div>
+      <div class="hiit-display">${formatTime(HIIT_PREPARE_SECONDS)}</div>
+      <div class="hiit-progress-track"><div class="hiit-progress-fill" style="width:100%"></div></div>
+      <div class="hiit-station-label">Prepará tu estación y tu respiración</div>
       <div class="hiit-controls">
-        <button type="button" class="hiit-btn hiit-toggle">▶ Iniciar</button>
-        <button type="button" class="hiit-btn reset hiit-reset">↺ Reiniciar</button>
+        <button type="button" class="hiit-btn-round play hiit-toggle" aria-label="Iniciar cronómetro">▶</button>
+        <button type="button" class="hiit-btn-round reset hiit-reset" aria-label="Reiniciar cronómetro">↺</button>
       </div>
     </div>`;
 }
@@ -1571,6 +2280,42 @@ document.getElementById('reset-progress').addEventListener('click', async () => 
   filterGrid();
 });
 /* ============================================================
+   FONDO CON PARALLAX + BARRA STICKY DE MARCA
+   Un solo listener de scroll (rAF-throttled) mueve las sub-capas
+   del fondo según su data-depth y alterna la barra sticky una vez
+   superado el masthead. Respeta prefers-reduced-motion.
+   ============================================================ */
+function setupScrollEffects() {
+  const stickyBar = document.getElementById('sticky-bar');
+  const masthead = document.querySelector('.masthead');
+  const depthLayers = Array.from(document.querySelectorAll('.parallax-bg [data-depth]'));
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ticking = false;
+  function applyScrollEffects() {
+    ticking = false;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    if (masthead) {
+      const threshold = masthead.offsetHeight;
+      if (stickyBar) stickyBar.classList.toggle('visible', scrollY > threshold);
+    }
+    if (!reduceMotion) {
+      depthLayers.forEach((layer) => {
+        const depth = parseFloat(layer.getAttribute('data-depth')) || 0;
+        layer.style.transform = `translate3d(0, ${(scrollY * depth).toFixed(2)}px, 0)`;
+      });
+    }
+  }
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(applyScrollEffects);
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  applyScrollEffects();
+}
+/* ============================================================
    INIT
    ============================================================ */
 async function init() {
@@ -1579,6 +2324,7 @@ async function init() {
   updateWeekUI();
   updateModeUI();
   filterGrid();
+  setupScrollEffects();
 }
 init();
 </script>
