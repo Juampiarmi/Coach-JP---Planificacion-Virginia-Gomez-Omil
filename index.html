@@ -40,7 +40,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   :root {
     --gold: #D2793F;
@@ -1756,7 +1756,8 @@ function finisherDetail(block, weekIdx){
 }
 function hyroxDetail(block, weekIdx){
   const wm = WEEKS_META[weekIdx];
-  return { minutes: wm.amrapMinutes, movements: block.movements, note: wm.hyroxNote };
+  const movements = (block.movements || []).filter(function(m){ return m != null && String(m).trim() !== ''; });
+  return { minutes: wm.amrapMinutes, movements: movements, note: wm.hyroxNote };
 }
 const CATEGORY_META = {
   warmup:{ cls:'bi-warmup', labelCls:'bl-warmup', insightsCls:'insights-warmup' },
@@ -1873,7 +1874,16 @@ function videoLinkHtml(name){
     'style="background-image:url(https://img.youtube.com/vi/' + ytid + '/mqdefault.jpg)" ' +
     'title="Ver la t\u00e9cnica" aria-label="Ver la t\u00e9cnica de ' + key.replace(/"/g,'') + '">' +
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg></a>';
-  return '';
+  /* FIX (auditoría Karina Dantur): sin match en la biblioteca -- el ID
+     puede estar roto o el ejercicio renombrado/borrado. Nunca se deja el
+     nombre sin ninguna vía de acceso al video: acceso directo de búsqueda
+     en YouTube con el nombre ya guardado, en vez de un ícono ausente.
+     Reutiliza .vsearch, la clase de fallback que ya existía en el CSS
+     (~línea 8915) pero que había quedado sin ningún generador conectado. */
+  return ' <a class="video-link jp-play vsearch" href="https://www.youtube.com/results?search_query=' +
+    encodeURIComponent(key + ' t\u00e9cnica ejercicio') + '" target="_blank" rel="noopener noreferrer" ' +
+    'title="Buscar t\u00e9cnica en YouTube" aria-label="Buscar t\u00e9cnica de ' + key.replace(/"/g,'') + ' en YouTube">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg><span class="mag">\ud83d\udd0d</span></a>';
 }
 /* Micro-badge "EN" (2026-09, refinamiento visual): el nombre en inglés del
    ejercicio ya no se muestra pegado al español en la cabecera -- compile()
@@ -1934,7 +1944,19 @@ if(!window.CoachRepaintBus){
    STATE
 ========================================================= */
 const STORAGE_KEY = 'coachjp_virginia-gomez-omil_progress_v1';
-window.COACH_DISCIPLINA = 'sports';
+/* Bug preexistente: este flag quedaba fijo en 'sports' en TODO documento
+   compilado, sin importar la disciplina real del plan -- eso apagaba en
+   silencio la Pizarra Táctica (gate de pizarra() más abajo) y el botón de
+   Vista Musculación/CrossFit para cualquier atleta de CrossFit ya exportado.
+   Se deriva del mismo flag que ya calcula bien buildProgramConfig() en el
+   Builder (PROGRAM_CONFIG.modoSemanal); en Sports sigue siendo 'sports'
+   exactamente igual que antes, cero cambio de comportamiento. */
+window.COACH_DISCIPLINA = PROGRAM_CONFIG.modoSemanal ? 'crossfit' : 'sports';
+/* fondo de alto rendimiento (micro-dot matrix) exclusivo de CrossFit -- ver
+   body.cf-disc en el <style> final del documento. Se marca acá (una sola
+   vez, apenas se conoce la disciplina) en vez de depender de body.cf-modo,
+   que sólo se activa en días 100% CrossFit y nunca en días híbridos. */
+if(window.COACH_DISCIPLINA !== 'sports') document.body.classList.add('cf-disc');
 const state = { mode:'complete', currentWeek:0, currentDay:(DAYS[0]||{}).id, completed:{}, fatigue:{}, loads:{}, notes:{}, scores:{}, session:{}, checkout:{}, restSec:90, sleep:{}, readinessPain:{}, videoLinks:{}, sesionNotificada:{} };
 let timerCounter = 0;
 const liveTimers = {};
@@ -2052,16 +2074,24 @@ function setLoadField(key, field, value){
   state.loads[key].ts = Date.now();
   saveProgress();
 }
-function renderSetRows(weekIdx, dayId, blockId, exIdx, numSets, repsHint, sugKg){
+function renderSetRows(weekIdx, dayId, blockId, exIdx, numSets, repsHint, sugKg, nombreEx){
   /* parser de unidades: si la prescripción de esta estación ya viene en
      distancia/tiempo ("20 metros", "30 seg", "400m"), el segundo input
-     no debe seguir etiquetado "Reps" -- se adapta a la unidad real. */
+     no debe seguir etiquetado "Reps" -- se adapta a la unidad real.
+     Directiva "casilleros dinámicos": mira nombre Y prescripción (antes
+     sólo miraba repsHint -- "Farmer carry" avisa por el NOMBRE, no
+     siempre trae metros en el detalle). */
+  const nm = String(nombreEx || '');
+  const rh = String(repsHint || '');
   let repsPlaceholder = 'Reps';
-  if(repsHint != null){
-    const rh = String(repsHint);
-    if(/\d\s*(metros?|km|m)\b/i.test(rh)) repsPlaceholder = 'm';
-    else if(/\d\s*(segundos?|seg|minutos?|min|s)\b/i.test(rh)) repsPlaceholder = 'seg';
-  }
+  if(/\bcarry\b/i.test(nm) || /\d\s*(metros?|km|m)\b/i.test(rh) || /\d\s*(metros?|km|m)\b/i.test(nm)) repsPlaceholder = 'm';
+  else if(/\d\s*(segundos?|seg|minutos?|min|s)\b/i.test(rh)) repsPlaceholder = 'seg';
+  /* bandas/peso corporal: el estímulo lo da la tensión de la banda o el
+     propio peso, no un número de Kg real -- se oculta ese casillero y
+     queda sólo Reps, centrado. Sólo mira el NOMBRE (no la prescripción)
+     para no deshabilitar el campo por accidente en un ejercicio con
+     barra que mencione un peso en el detalle. */
+  const esBanda = /\b(banda|band|el[aá]stica|bw|bodyweight)\b/i.test(nm);
   let html = '<div class="set-tracker">';
   /* directiva de rediseño: marca la primera serie sin completar como
      "activa" para darle escala numérica destacada (kg/reps más grandes) --
@@ -2085,7 +2115,7 @@ function renderSetRows(weekIdx, dayId, blockId, exIdx, numSets, repsHint, sugKg)
        ejecutado en S-1 (el objetivo programado suele ser un rango tipo
        "10-12", no sirve para precargar un número exacto). */
     let kgVal = ld.kg, repsVal = ld.reps, sugerido = false;
-    if((kgVal == null || kgVal === '') && weekIdx > 0){
+    if(!esBanda && (kgVal == null || kgVal === '') && weekIdx > 0){
       const prevLd = getLoad(getLoadKey(weekIdx - 1, dayId, blockId, exIdx, i));
       const kgPrev = (prevLd.kg != null && prevLd.kg !== '') ? prevLd.kg : null;
       const kgSug = (sugKg && sugKg > 0) ? sugKg : kgPrev;
@@ -2093,6 +2123,9 @@ function renderSetRows(weekIdx, dayId, blockId, exIdx, numSets, repsHint, sugKg)
       if((repsVal == null || repsVal === '') && prevLd.reps != null && prevLd.reps !== ''){
         repsVal = prevLd.reps; setLoadField(key, 'reps', repsVal); sugerido = true;
       }
+    } else if(esBanda && (repsVal == null || repsVal === '') && weekIdx > 0){
+      const prevLd = getLoad(getLoadKey(weekIdx - 1, dayId, blockId, exIdx, i));
+      if(prevLd.reps != null && prevLd.reps !== ''){ repsVal = prevLd.reps; setLoadField(key, 'reps', repsVal); sugerido = true; }
     }
     /* pedido 41: Kg/×/Reps/✓ viven ahora agrupados en .set-load, un
        sub-contenedor flex propio con flex-wrap:nowrap -- así, si algún
@@ -2109,18 +2142,24 @@ function renderSetRows(weekIdx, dayId, blockId, exIdx, numSets, repsHint, sugKg)
        porque acá es donde ya están kgVal/repsVal resueltos (sugeridos o
        reales); el CSS decide cuándo mostrar esto vs. los inputs reales,
        nunca se lee/escribe un dato nuevo. */
-    const resumenCompacto = (kgVal != null && kgVal !== '' && repsVal != null && repsVal !== '')
-      ? (kgVal + '\u00d7' + repsVal) : '\u2014';
-    html += '<div class="set-row' + (ld.done?' set-row-done':'') + (sugerido?' set-row-sug':'') + claseActiva + '" data-set-key="' + key + '">' +
+    const resumenCompacto = esBanda
+      ? (repsVal != null && repsVal !== '' ? (repsVal + ' ' + repsPlaceholder.toLowerCase()) : '\u2014')
+      : ((kgVal != null && kgVal !== '' && repsVal != null && repsVal !== '')
+        ? (kgVal + '\u00d7' + repsVal) : '\u2014');
+    html += '<div class="set-row' + (ld.done?' set-row-done':'') + (sugerido?' set-row-sug':'') + claseActiva + (esBanda?' set-row-banda':'') + '" data-set-key="' + key + '">' +
       '<button type="button" class="set-row-toggle" aria-label="Ver serie ' + i + '">' +
         '<span class="set-row-label">Serie ' + i + '</span>' +
         '<span class="set-row-compact">' + resumenCompacto + '</span>' +
       '</button>' +
-      '<div class="set-load">' +
-        '<span class="set-field"><span class="set-unit">kg</span>' +
-          '<input class="set-input set-kg' + (sugerido&&kgVal!=null?' set-input-sug':'') + '" type="text" inputmode="decimal" autocomplete="off" placeholder="Kg" value="' + (kgVal!=null?kgVal:'') + '" />' +
-        '</span>' +
-        '<span class="set-x" aria-hidden="true">\u00d7</span>' +
+      '<div class="set-load' + (esBanda?' set-load-banda':'') + '">' +
+        /* bandas/peso corporal: sin casillero de Kg -- el estímulo no se
+           mide en un número de carga real (ver esBanda más arriba). */
+        (esBanda ? '' :
+          '<span class="set-field"><span class="set-unit">kg</span>' +
+            '<input class="set-input set-kg' + (sugerido&&kgVal!=null?' set-input-sug':'') + '" type="text" inputmode="decimal" autocomplete="off" placeholder="Kg" value="' + (kgVal!=null?kgVal:'') + '" />' +
+          '</span>' +
+          '<span class="set-x" aria-hidden="true">\u00d7</span>'
+        ) +
         /* el objetivo (repsHint) ya no va como placeholder acá: se veía como
            texto tenue "dato ya cargado" y desaparecía justo al tocar el campo
            para tipear -- ahora el objetivo se muestra afuera, en texto fijo
@@ -2253,6 +2292,10 @@ function aplicarSobrecargaReadiness(weekIdx, dayId){
    de todo el mesociclo, no solo "esta sesión"). Si no hay nada que mostrar
    todavía (primera sesión, cero historial), no se renderiza nada. */
 function renderContextoSesion(){
+  /* limpieza de la Pizarra Táctica (2026-09-16): "lo que trajiste la
+     última vez" es racha/PR de trabajo con series -- ruido de Bodybuilding
+     en una sesión de CrossFit, aunque el alumno tenga historial viejo. */
+  if(window.COACH_DISCIPLINA !== 'sports') return '';
   const r = (window.CoachMetricas && typeof window.CoachMetricas.racha === 'function') ? window.CoachMetricas.racha() : null;
   const det = (state.session && state.session.prDetalle) || [];
   const ultimoPR = det.length ? det[det.length - 1] : null;
@@ -2928,7 +2971,7 @@ function renderBlockInner(block, day, weekIdx){
       '<span class="ex-detail"><strong>' + lblSets + '</strong>' + repsSemana + ' · Tempo ' + block.tempo +
       refPreviaHtml(weekIdx, day.id, block.id, 0, setsSemana) + '</span></div>';
     if(typeof renderSetRows === 'function'){
-      html += renderSetRows(weekIdx, day.id, block.id, 0, setsSemana, repsSemana, cargaSugeridaKg(block, weekIdx));
+      html += renderSetRows(weekIdx, day.id, block.id, 0, setsSemana, repsSemana, cargaSugeridaKg(block, weekIdx), nombreSemana);
     }
     var notaSem = (block.weekNote && block.weekNote[weekIdx]) || block.tips;
     if(notaSem){ html += '<div class="coach-note"><strong>Coach Note</strong>' + notaSem + '</div>'; }
@@ -2946,7 +2989,7 @@ function renderBlockInner(block, day, weekIdx){
       html += '<div class="ex-row"><div class="ex-bullet"></div><span class="ex-name">' + ex.name + enBadgeHtml(ex.nameEn) + videoLinkHtml(ex.name) + '</span><span class="ex-detail">' + ex.reps + (ex.tempo ? ' · Tempo ' + ex.tempo : '') +
         refPreviaHtml(weekIdx, day.id, block.id, exIdx, sd.rounds) + '</span></div>';
       if(typeof renderSetRows === 'function'){
-        html += renderSetRows(weekIdx, day.id, block.id, exIdx, sd.rounds, ex.reps, cargaSugeridaKg(block, weekIdx));
+        html += renderSetRows(weekIdx, day.id, block.id, exIdx, sd.rounds, ex.reps, cargaSugeridaKg(block, weekIdx), ex.name);
       }
     });
     html += '<span class="directive-badge">\u26a1 Transici\u00f3n continua (sin pausa)</span>';
@@ -3113,13 +3156,73 @@ function blockIconHtml(raw){
    jerarquía visual) -- "Calentamiento" dice lo mismo en menos caracteres
    y entra completo en el ancho del header. */
 const ROL_BLOQUE_CAT = { strength:'Principal', accessory:'Accesorio', metcon:'Finisher', cardio:'Cardio', warmup:'Calentamiento' };
+/* en CrossFit, category es la Fase de la pizarra (Warm-up/Skill-Strength/
+   WOD-Metcon/Hyrox Stations/Accessory-Cooldown), no el rol de Bodybuilding
+   -- "metcon" ahí NO es "Finisher", así que el pill de cada bloque usa un
+   vocabulario propio en vez del de ROL_BLOQUE_CAT (pensado para musculación). */
+const ROL_BLOQUE_CAT_CF = { warmup:'Warm-Up', strength:'Skill / Strength', metcon:'WOD / Metcon', cardio:'Hyrox Stations', accessory:'Accessory / Cooldown' };
+/* placeholder que el compilador del Builder auto-completa en bloques vacíos
+   (ver Módulo 44, "auto-fill vacío") -- si es lo único que trae el bloque,
+   para el alumno es un bloque sin contenido real y no debe renderizarse.
+   Global (no dentro del IIFE de pizarra()) porque tanto renderBlock() acá
+   como pizarra() más abajo necesitan la misma regla. */
+const CF_PLACEHOLDER = 'Cargá acá los ítems del bloque, uno por línea';
+function esBloqueVacioCF(block){
+  const items = (block.items || []).map(x => String(x || '').trim()).filter(Boolean);
+  if(!items.length) return true;
+  return items.length === 1 && items[0] === CF_PLACEHOLDER;
+}
+/* datos para la Story Card exclusiva de CrossFit: kg clave del bloque de
+   fuerza/skill, estructura del WOD/Metcon y el score que el alumno ya
+   cargó en la Pizarra -- lee directo de day.blocks (mismos datos
+   compilados que ya usa pizarra(), sin duplicar lógica de parseo). */
+function datosStoryCF(weekIdx, day){
+  const blocks = (day.blocks || []).filter(b => !esBloqueVacioCF(b));
+  const wod = blocks.find(b => b.category === 'metcon') || blocks.find(b => b.category === 'cardio');
+  const skill = blocks.find(b => b.category === 'strength');
+  let kgClave = '';
+  if(skill && skill.items){
+    for(const l of skill.items){
+      const m = String(l).match(/@\s*([\d.,/]+)\s*kg/i) || String(l).match(/(\d+(?:[.,]\d+)?)\s*kg/i);
+      if(m){ kgClave = m[1] + ' KG'; break; }
+    }
+  }
+  let estructura = '';
+  if(wod && wod.items){
+    const esquema = wod.items.map(x => String(x).trim()).find(l => /^\d+(-\d+){1,}$/.test(l));
+    const movs = wod.items
+      .map(x => String(x).trim())
+      .filter(l => l && !/^\d+(-\d+){1,}$/.test(l) && !/^(cap|rest|descanso|nota|amrap|emom|for\s*time)\b/i.test(l) && !/:\s*$/.test(l))
+      .slice(0, 2)
+      .map(l => l.split(' — ')[0].split('@')[0].trim());
+    estructura = [esquema, movs.join(' / ')].filter(Boolean).join(' ').toUpperCase();
+  }
+  let score = '';
+  if(wod){
+    const skey = weekIdx + '|' + day.id + '|' + wod.id;
+    score = (typeof state !== 'undefined' && state.scores && state.scores[skey]) || '';
+  }
+  return {
+    modo: 'crossfit',
+    atleta: PROGRAM_CONFIG.athleteName || 'Atleta',
+    tituloWod: (wod && wod.title) || day.title || day.short || 'WOD',
+    kgClave: kgClave,
+    estructura: estructura,
+    score: score
+  };
+}
 function rolBloque(block){
+  if(window.COACH_DISCIPLINA !== 'sports') return ROL_BLOQUE_CAT_CF[block.category] || 'WOD';
   if(block.isSuperset) return block.isTriset ? 'Triset' : 'Biset';
   if(block.isFinisher) return 'Finisher';
   if(block.isHyrox) return 'Motor';
   return ROL_BLOQUE_CAT[block.category] || 'Bloque';
 }
 function renderBlock(block, day, weekIdx, idx){
+  /* purga de bloques vacíos/placeholder en CrossFit: si el bloque de
+     pizarra no trae contenido real, no se renderiza ni la tarjeta ni su
+     envoltorio -- una card vacía no le sirve al alumno para nada. */
+  if(window.COACH_DISCIPLINA !== 'sports' && Array.isArray(block.items) && esBloqueVacioCF(block)) return '';
   const meta = CATEGORY_META[block.category] || CATEGORY_META.strength;
   const catCls = block.category === 'strength' ? 'cat-strength' : (block.category === 'warmup' ? 'cat-warmup' : (block.category === 'metcon' ? 'cat-metcon' : (block.category === 'cardio' ? 'cat-cardio' : 'cat-accessory')));
   const done = isBlockDone(weekIdx, day.id, block.id);
@@ -3220,6 +3323,31 @@ function renderMain(){
                  : '<li><span>&#10022;</span>' + c + '</li>';
       }).join('') + '</ul>' +
       (day.cooldownNota ? '<p class="cd-nota">' + day.cooldownNota + '</p>' : '') + '</div>'; }
+  /* Vault Técnico del Día (CrossFit): clips elegidos en el Builder
+     (d.cfVault -> day.cfVault ya resuelto con videoId en buildProgramConfig).
+     Va después del cooldown y antes de "Marcar Día Completo", nunca al
+     revés -- ver directiva de la Pizarra Táctica. */
+  if(window.COACH_DISCIPLINA !== 'sports' && day.cfVault && day.cfVault.length){
+    html += '<div class="jp-vault-day">' +
+      '<div class="jp-vault-head">[ VAULT TÉCNICO DEL DÍA ]</div>' +
+      '<div class="jp-vault-strip">' +
+        day.cfVault.map(function(v){
+          return '<div class="jp-vault-clip">' +
+            '<div class="jp-vault-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + v.videoId + '?rel=0&modestbranding=1&playsinline=1" loading="lazy" allow="encrypted-media" allowfullscreen title="' + v.nombre + '"></iframe></div>' +
+            '<div class="jp-vault-lb">' + v.nombre + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+  /* Story Card CrossFit: botón fijo al cierre de la sesión, siempre justo
+     antes de "Marcar Día Completo" -- no depende de tildar cada bloque a
+     mano (esa vía sigue existiendo dentro de .summary-card para
+     Bodybuilding, sin tocar). Sólo en disciplina CrossFit; dibujarCF()
+     lee el bloque de fuerza/skill y el WOD/Metcon del día ya renderizado. */
+  if(window.COACH_DISCIPLINA !== 'sports'){
+    html += '<button type="button" class="story-cta" id="storyCtaBtn">📸 Generar Story Card</button>';
+  }
   /* directiva (reubicación de cierre): "Marcar Día Completo" era una
      acción de cierre viviendo arriba, apretando el inicio del
      entrenamiento -- baja al final absoluto de la rutina, debajo del
@@ -3277,6 +3405,7 @@ function wireBlockInteractions(day, weekIdx, blocks){
     });
     blockEl.querySelectorAll('.set-row').forEach(function(row){
       const key = row.dataset.setKey;
+      const esBandaRow = row.classList.contains('set-row-banda');
       const kgInput = row.querySelector('.set-kg');
       const repsInput = row.querySelector('.set-reps');
       const chk = row.querySelector('.set-check');
@@ -3284,24 +3413,37 @@ function wireBlockInteractions(day, weekIdx, blocks){
       /* directiva de rediseño F (v2): resumen compacto en vivo (mismo texto
          que ya arma renderSetRows() al pintar, recalculado acá sólo para
          que no quede desactualizado si el alumno tipea sin recargar la
-         página -- no es una fuente de datos nueva, sólo texto derivado). */
+         página -- no es una fuente de datos nueva, sólo texto derivado).
+         17/09 · casilleros dinámicos (bandas/peso corporal): esas filas no
+         tienen .set-kg en el DOM (renderSetRows() lo omite a propósito), así
+         que kgInput puede ser null -- ambos listeners y el resumen se
+         blindan contra eso en vez de asumir que el campo siempre existe. */
       function refrescarResumen(){
         if(!compactEl) return;
-        const kg = kgInput.value, reps = repsInput.value;
+        const reps = repsInput ? repsInput.value : '';
+        if(esBandaRow){
+          compactEl.textContent = reps ? (reps + ' ' + (repsInput.placeholder||'reps').toLowerCase()) : '\u2014';
+          return;
+        }
+        const kg = kgInput ? kgInput.value : '';
         compactEl.textContent = (kg && reps) ? (kg + '\u00d7' + reps) : '\u2014';
       }
-      kgInput.addEventListener('input', function(){
-        const clean = sanearPeso(kgInput.value);
-        if(clean !== kgInput.value) kgInput.value = clean;
-        setLoadField(key, 'kg', clean);
-        refrescarResumen();
-      });
-      repsInput.addEventListener('input', function(){
-        const clean = sanearReps(repsInput.value);
-        if(clean !== repsInput.value) repsInput.value = clean;
-        setLoadField(key, 'reps', clean);
-        refrescarResumen();
-      });
+      if(kgInput){
+        kgInput.addEventListener('input', function(){
+          const clean = sanearPeso(kgInput.value);
+          if(clean !== kgInput.value) kgInput.value = clean;
+          setLoadField(key, 'kg', clean);
+          refrescarResumen();
+        });
+      }
+      if(repsInput){
+        repsInput.addEventListener('input', function(){
+          const clean = sanearReps(repsInput.value);
+          if(clean !== repsInput.value) repsInput.value = clean;
+          setLoadField(key, 'reps', clean);
+          refrescarResumen();
+        });
+      }
       chk.addEventListener('change', function(){
         setLoadField(key, 'done', chk.checked);
         row.classList.toggle('set-row-done', chk.checked);
@@ -3418,6 +3560,14 @@ function wireBlockInteractions(day, weekIdx, blocks){
       openVideoPopup(ytid);
     });
   });
+  const storyCtaBtn = document.getElementById('storyCtaBtn');
+  if(storyCtaBtn){
+    storyCtaBtn.addEventListener('click', function(){
+      if(window.CoachStory && typeof window.CoachStory.abrirCF === 'function'){
+        window.CoachStory.abrirCF(datosStoryCF(weekIdx, day));
+      }
+    });
+  }
   const dayCompleteBtn = document.getElementById('dayCompleteBtn');
   if(dayCompleteBtn){
     dayCompleteBtn.addEventListener('click', function(){
@@ -3478,7 +3628,7 @@ if(hudEl) hudEl.addEventListener('transitionend', function(){
   if(videoWrapEl && videoWrapEl.classList.contains('open')) ajustarPosicionVideoPopup();
 });
 function openVideoPopup(ytid){
-  videoIframeEl.src = 'https://www.youtube-nocookie.com/embed/' + ytid + '?autoplay=1&rel=0';
+  videoIframeEl.src = 'https://www.youtube-nocookie.com/embed/' + ytid + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
   videoFallbackEl.href = 'https://www.youtube.com/watch?v=' + ytid;
   videoWrapEl.classList.add('open');
   ajustarPosicionVideoPopup();
@@ -3559,6 +3709,16 @@ const calc1rmEl = document.getElementById('calc1rm');
 const calcTableEl = document.getElementById('calcTable');
 const PCT_TABLE = [50,55,60,65,70,75,80,85,90,95,100];
 function roundTo(value, step){ return Math.round(value/step) * step; }
+/* FIX (bug matemático reportado): con reps===1 el 1RM DEBE ser idéntico
+   al peso levantado -- Epley/Brzycki sin este caso especial infla el
+   100% (190kg x 1 rep estimaba 197.5kg en vez de 190kg). Con reps>1 se
+   capea a 12 para no proyectar 1RMs irreales en series de altas reps. */
+function calcOneRM(w, r){
+  if(!(w > 0)) return 0;
+  if(r <= 1) return w;
+  const rCap = Math.min(r, 12);
+  return w * (1 + rCap/30);
+}
 function recalcOneRM(){
   const w = parseFloat(calcWeightEl.value);
   const r = parseFloat(calcRepsEl.value);
@@ -3568,7 +3728,7 @@ function recalcOneRM(){
     calcTableEl.innerHTML = '<p class="calc-empty">Ingresá peso y repeticiones para calcular tu 1RM estimado (fórmula de Epley) y la tabla de porcentajes.</p>';
     return;
   }
-  const oneRM = w * (1 + r/30);
+  const oneRM = calcOneRM(w, r);
   calc1rmEl.textContent = '1RM Estimado: ' + roundTo(oneRM, step) + ' kg';
   calcTableEl.innerHTML = PCT_TABLE.map(function(pct){
     const val = roundTo(oneRM * pct/100, step);
@@ -4285,6 +4445,26 @@ body.nav-stuck .week-selector-wrap,body.nav-stuck .week-tabs-wrap{box-shadow:0 6
     }
     return mejor;
   }
+  /* formato estructurado (block.boardFmt, seteado por el coach en el Builder) --
+     si está presente gana sobre la inferencia por regex de abajo; si no, el
+     comportamiento previo (formatoDe/primerFormato) sigue exactamente igual. */
+  var CF_FMT_MAP = {
+    fortime: { lb:'FOR TIME', modo:'up' },
+    amrap:   { lb:'AMRAP',    modo:'down' },
+    emom:    { lb:'EMOM',     modo:'down' },
+    tabata:  { lb:'TABATA',   modo:'down' },
+    chipper: { lb:'CHIPPER',  modo:'up' }
+  };
+  function formatoEstructurado(block){
+    var k = String(block.boardFmt || '').toLowerCase().replace(/[^a-z]/g, '');
+    return CF_FMT_MAP[k] || null;
+  }
+  var CF_SCORE_PH = {
+    tiempo: 'Tiempo final (ej: 11:42)',
+    rondas: 'Rondas + reps (ej: 6+12)',
+    reps:   'Reps totales (ej: 143)',
+    kg:     'Carga total (ej: 82.5 kg)'
+  };
   function formatoDe(block, lineas, weekIdx){
     /* el cuerpo del bloque manda: si dice EMOM, la tarjeta dice EMOM.
        El fallback (cuando el cuerpo de ESTA semana no trae ninguna palabra
@@ -4315,43 +4495,152 @@ body.nav-stuck .week-selector-wrap,body.nav-stuck .week-tabs-wrap{box-shadow:0 6
     return block.category === 'metcon' ||
            /met.?con|wod|bloque c|amrap|emom|for time|chipper/i.test((block.title||'') + ' ' + (block.subtitle||'') + ' ' + etiquetaWi);
   }
+  var CF_FASE_LB = { warmup:'WARM-UP', strength:'SKILL / STRENGTH', metcon:'WOD / METCON', cardio:'HYROX STATIONS', accessory:'ACCESSORY / COOLDOWN' };
+  /* identidad visual táctica por fase (directiva): un glifo distinto por
+     tipo de trabajo para que se reconozca de un vistazo, además del
+     color de borde/tag ya diferenciado por CSS (.jp-cf-fase-*). */
+  var CF_FASE_ICON = { warmup:'\ud83d\udd25', strength:'\ud83c\udfcb\ufe0f', metcon:'\u26a1', cardio:'\ud83c\udfc3', accessory:'\ud83e\udde9' };
+  var CF_PARAM_PREFIX = { fortime:'Cap ', chipper:'Cap ', emom:'Cada ' };
+  /* solo las fases de competencia/tiempo (WOD-Metcon, Hyrox Stations) llevan
+     campo de Score -- Warm-up, Skill/Strength y Accessory/Cooldown no se
+     puntúan, no importa qué formato tenga el texto suelto. */
+  var CF_SCORE_FASES = { metcon:1, cardio:1 };
+  /* esBloqueVacioCF() es global (ver renderBlock() más arriba en el script
+     anterior) -- misma función, un solo lugar donde vive la definición. */
+  /* parser de la Pizarra Táctica: distingue encabezado de protocolo (termina en
+     ':' o arranca con '#'), instrucción/transición de intervalo (Cap/Rest/AMRAP
+     suelto, ya sin prescripción de carga) y movimiento real (reps+nombre con
+     carga '@ 70kg', medida 'cm/m' o el separador estructurado 'Nombre — valor')
+     -- sólo el movimiento real va en tarjeta modular con pastilla de carga. */
+  function jpMdBold(t){ return String(t || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
+  function jpCfEsHeader(l){ return /^\s*#+\s*/.test(l) || /:\s*$/.test(l.replace(/\*\*/g, '').trim()); }
+  function jpCfTieneCarga(l){ return /@\s*[\d.]/.test(l) || /\d[\d.\/]*\s*(?:kg|kgs|lb|lbs|cm|m)\b/i.test(l); }
+  /* esquema de reps puro (ej. "21-15-9", "5-5-5-5-5") -- pastilla táctica
+     propia, no es ni encabezado ni movimiento con carga */
+  function jpCfEsEsquema(l){ return /^\d+(-\d+){1,}$/.test(l.trim()); }
+  /* resalta el número/unidad inicial de una línea de movimiento (reps,
+     calorías, minutos) en Cyan Táctico -- el resto del nombre del
+     ejercicio queda en blanco nítido. Sólo reconoce unidades reales
+     (kg/cm/min/seg/cal/reps/rondas/%) para no comerse la primera palabra
+     de ejercicios que arrancan con número pero no traen unidad (ej.
+     "10 Front squats" -> "10" + "Front squats", nunca "10 Front"). */
+  var JP_CF_UNIT_RX = /^(\d+(?:[.,]\d+)?)\s*(kgs?|lbs?|cms?|kms?|mins?|minutos?|segs?|segundos?|cals?|reps?|rondas?|rounds?|%|m)?\s*(.*)$/i;
+  function jpCfHighlightNum(t){
+    const raw = String(t || '');
+    const m = raw.match(JP_CF_UNIT_RX);
+    if(!m || !m[1]) return jpMdBold(raw);
+    const num = m[1], unit = m[2] || '', rest = (m[3] || '').trim();
+    return '<span class="jp-cf-num">' + num + (unit ? ' ' + unit : '') + '</span>' + (rest ? ' ' + jpMdBold(rest) : '');
+  }
+  /* título del bloque con tratamiento de marca: primera palabra en blanco
+     puro, el remate en Naranja Marca -- ej. "EL CIERRE" -> "EL" blanco +
+     "CIERRE" naranja. */
+  function jpCfTituloHtml(t){
+    const s = String(t || 'WOD');
+    const i = s.indexOf(' ');
+    if(i < 0) return '<span class="jp-cf-t1">' + s + '</span>';
+    return '<span class="jp-cf-t1">' + s.slice(0, i) + '</span> <span class="jp-cf-t2">' + s.slice(i + 1) + '</span>';
+  }
+  function jpCfSplit(l){
+    const i = l.indexOf(' — ');
+    if(i >= 0) return { nm: l.slice(0, i).trim(), val: l.slice(i + 3).trim() };
+    const m = l.match(/^(.*?)(@\s*[^()]+(?:\([^)]*\))?)\s*$/);
+    if(m && m[1].trim()) return { nm: m[1].trim(), val: m[2].trim() };
+    const m2 = l.match(/^(.*?)(\d[\d.\/]*\s*(?:kg|kgs|lb|lbs|cm|m)\b.*)$/i);
+    if(m2 && m2[1].trim()) return { nm: m2[1].trim(), val: m2[2].trim() };
+    return { nm: l, val: '' };
+  }
+  function jpCfFila(raw, conVideo){
+    const l = String(raw || '').trim();
+    if(jpCfEsHeader(l)){
+      const txt = l.replace(/^\s*#+\s*/, '');
+      return '<div class="jp-cf-row jp-cf-header">' + jpMdBold(txt) + '</div>';
+    }
+    if(jpCfEsEsquema(l)){
+      return '<div class="jp-cf-row jp-cf-scheme">' + l.trim() + '</div>';
+    }
+    if(/^\s*\d+\.\s/.test(l) && l.indexOf(' — ') < 0 && !jpCfTieneCarga(l)){
+      return '<div class="jp-cf-row jp-cf-badge">' + jpMdBold(l) + '</div>';
+    }
+    if(esLineaDirectiva(l) && !jpCfTieneCarga(l)){
+      return '<div class="jp-cf-row jp-cf-badge">' + jpMdBold(l) + '</div>';
+    }
+    /* objetivo/transición de intervalo suelto (ej: "90 Seg AMRAP") -- lleva
+       AMRAP/EMOM/rest en el cuerpo (no sólo al inicio, por eso esLineaDirectiva
+       no lo agarra) pero no prescribe carga ni movimiento puntual */
+    if(/\b(amrap|emom|rest|descanso)\b/i.test(l) && !jpCfTieneCarga(l) && l.indexOf(' — ') < 0){
+      return '<div class="jp-cf-row jp-cf-badge">' + jpMdBold(l) + '</div>';
+    }
+    const partes = jpCfSplit(l);
+    /* estrategia de videos (directiva): sólo Accessory/Cooldown vincula
+       video por ejercicio, igual que Sports & Bodybuilding -- WOD y
+       Fuerza/Skill quedan tácticos y limpios, sin miniaturas flotantes. */
+    const video = conVideo ? videoLinkHtml(partes.nm) : '';
+    return '<div class="jp-cf-row">' +
+        '<span class="jp-cf-rn">' + jpCfHighlightNum(partes.nm) + video + '</span>' +
+        (partes.val ? '<span class="jp-cf-rv">' + jpMdBold(partes.val) + '</span>' : '') +
+      '</div>';
+  }
   function pizarra(blockEl, block, weekIdx, dayId){
-    const lineas = [];
-    blockEl.querySelectorAll('.block-body .ex-row, .block-body .wu-phase').forEach(function(el){
-      const n = el.querySelector('.ex-name');
-      const d = el.querySelector('.ex-detail');
-      lineas.push(((n ? n.childNodes[0].textContent : el.textContent) + (d ? ' — ' + d.textContent : '')).trim());
-    });
-    if(!lineas.length) return;
-    const f = formatoDe(block, lineas, weekIdx);
+    /* lee las líneas directo del dato compilado (block.items), no del DOM
+       ya renderizado -- más robusto y permite el parseo nombre/valor sin
+       depender de cómo el renderer genérico haya envuelto cada línea. */
+    if(esBloqueVacioCF(block)) return;
+    /* 17/09 · auditoría general: una línea nula o vacía en block.items (dato
+       viejo, pegado con saltos de más, etc.) no debe sobrevivir como fila
+       muda en la Pizarra -- se purga acá, en el propio render, para que la
+       reparación no dependa de que el coach corra auditarYRepararPlanes(). */
+    const lineas = (block.items || []).map(function(l){ return l; }).filter(function(l){ return l != null && String(l).trim() !== ''; });
+    const f = formatoEstructurado(block) || formatoDe(block, lineas, weekIdx);
     const min = minutosDe(block, lineas);
     const skey = weekIdx + '|' + dayId + '|' + block.id;
     const guardado = state.scores[skey] || '';
-    const ph = f && f.modo === 'up' ? 'Tiempo final (ej: 11:42)' : 'Rondas + reps (ej: 6+12)';
-    const html =
-      '<div class="wod-board" data-wodb="' + block.id + '">' +
-        '<div class="wb-h"><span style="font-size:1.15rem">🏁</span>' +
-          '<span class="wb-fmt">' + (f ? f.lb : 'WOD') + '</span>' +
-        '</div>' +
-        '<div class="wb-body">' +
-          /* el protocolo del bloque abre la pizarra: es el título del contenido.
-             El subtítulo estático sólo se muestra si esta semana no rotó --
-             si rotó, describe el contenido de otra semana (ej. "Core
-             antirotación" encabezando un WOD de Front Rack Lunge Walk) */
-          ((block.subtitle && !(block.weekName && block.weekName[weekIdx] && block.weekName[weekIdx] !== block.title))
-            ? '<div class="wb-line head"><span>' + block.subtitle + '</span></div>' : '') +
-          lineas.map(function(l, i){
-            const head = /:\s*$/.test(l) || /^(amrap|emom|every|for time|\d+\s*rondas?|\d+\s*rounds?|chipper)/i.test(l);
-            return '<div class="wb-line' + (head ? ' head' : '') + '">' +
-              (head ? '' : '<span class="n">' + (i) + '</span>') + '<span>' + l + '</span></div>';
-          }).join('') +
-        '</div>' +
+    const ph = (block.scoreType && CF_SCORE_PH[block.scoreType]) ||
+      (f && f.modo === 'up' ? 'Tiempo final (ej: 11:42)' : 'Rondas + reps (ej: 6+12)');
+    const fase = CF_FASE_LB[block.category] || 'WOD / METCON';
+    const kFmt = String(block.boardFmt || '').toLowerCase().replace(/[^a-z]/g, '');
+    const paramTxt = block.cfParam ? ((CF_PARAM_PREFIX[kFmt] || '') + block.cfParam) : (min ? (min + ' min') : '');
+    const c = block.cierre || {};
+    const tieneCierre = !!(c.objetivo || c.tips || c.pacing || c.escalado);
+    const scoreVisible = !!CF_SCORE_FASES[block.category];
+    /* Accessory/Cooldown no trackea serie por serie: sólo un campo libre
+       de notas de carga/sensaciones, al pie del bloque -- reutiliza
+       state.notes (mismo store que las notas de sesión) con una key
+       propia (sufijo __accnotas) para no pisar ningún otro uso. */
+    const notasVisible = block.category === 'accessory';
+    const notaKey = skey + '|__accnotas';
+    const notaGuardada = (state.notes && state.notes[notaKey]) || '';
 
-        '<div class="wod-score">' +
-          '<label>🏆 Score</label>' +
-          '<input class="wod-score-in" data-skey="' + skey + '" placeholder="' + ph + '" value="' + (guardado || '') + '" />' +
-          '<span class="ws-ok" data-sok="' + skey + '">' + (guardado ? '✓ guardado' : '') + '</span>' +
-        '</div>' +
+    const conVideo = block.category === 'accessory';
+    const filas = lineas.map(function(l){ return jpCfFila(l, conVideo); }).join('');
+
+    const faseCls = 'jp-cf-fase-' + (CF_FASE_LB[block.category] ? block.category : 'metcon');
+    const html =
+      '<div class="wod-board jp-cfboard ' + faseCls + '" data-wodb="' + block.id + '">' +
+        '<div class="jp-cf-tag">[ CROSSFIT &middot; ' + (CF_FASE_ICON[block.category] || '') + ' ' + fase + ' ]</div>' +
+        '<div class="jp-cf-title">' + jpCfTituloHtml(block.title) + '</div>' +
+        (f ? '<div class="jp-cf-fmtbar"><span class="a">' + f.lb + '</span>' + (paramTxt ? ' <span class="b">' + paramTxt + '</span>' : '') + '</div>' : '') +
+        ((block.subtitle && !(block.weekName && block.weekName[weekIdx] && block.weekName[weekIdx] !== block.title))
+          ? '<div class="jp-cf-row jp-cf-note">' + block.subtitle + '</div>' : '') +
+        '<div class="jp-cf-rows">' + filas + '</div>' +
+        (tieneCierre ?
+          '<details class="jp-cf-acc"><summary>&#9662; Objetivo del est&iacute;mulo &amp; Coaching Tips</summary>' +
+            (c.objetivo ? '<div class="jp-cf-accrow"><span class="lb">Objetivo</span><p>' + c.objetivo + '</p></div>' : '') +
+            (c.tips ? '<div class="jp-cf-accrow"><span class="lb">Coaching tips</span><p>' + c.tips + '</p></div>' : '') +
+            (c.pacing ? '<div class="jp-cf-accrow"><span class="lb">Pacing</span><p>' + c.pacing + '</p></div>' : '') +
+            (c.escalado ? '<div class="jp-cf-accrow"><span class="lb">Escalado</span><p>' + c.escalado + '</p></div>' : '') +
+          '</details>' : '') +
+        (scoreVisible ?
+          '<div class="wod-score">' +
+            '<label>[ SCORE ]</label>' +
+            '<input class="wod-score-in" data-skey="' + skey + '" placeholder="' + ph + '" value="' + (guardado || '') + '" />' +
+            '<span class="ws-ok" data-sok="' + skey + '">' + (guardado ? '✓ guardado' : '') + '</span>' +
+          '</div>' : '') +
+        (notasVisible ?
+          '<div class="jp-cf-notas">' +
+            '<label>[ NOTAS DE CARGA / SENSACIONES ]</label>' +
+            '<input class="jp-cf-notas-in" data-nkey="' + notaKey + '" placeholder="Ej: Usé KB de 24kg y banda roja" value="' + String(notaGuardada).replace(/"/g, '&quot;') + '" />' +
+          '</div>' : '') +
       '</div>';
     const body = blockEl.querySelector('.block-body');
     if(body && !body.querySelector('[data-wodb]')) body.insertAdjacentHTML('afterbegin', html);
@@ -4381,6 +4670,16 @@ body.nav-stuck .week-selector-wrap,body.nav-stuck .week-tabs-wrap{box-shadow:0 6
         if(ok) ok.textContent = inp.value ? '✓ guardado' : '';
       });
       inp.addEventListener('click', function(e){ e.stopPropagation(); });
+    }
+    const notasInp = body ? body.querySelector('.jp-cf-notas-in') : null;
+    if(notasInp && !notasInp.dataset.on){
+      notasInp.dataset.on = '1';
+      notasInp.addEventListener('input', function(){
+        state.notes = state.notes || {};
+        state.notes[notasInp.dataset.nkey] = notasInp.value;
+        saveProgress();
+      });
+      notasInp.addEventListener('click', function(e){ e.stopPropagation(); });
     }
   }
 
@@ -4640,8 +4939,13 @@ body.nav-stuck .week-selector-wrap,body.nav-stuck .week-tabs-wrap{box-shadow:0 6
       const b = mapa[el.dataset.blockId]; if(!b) return;
       /* gate de disciplina: en Sports la pizarra WOD nunca debe montarse,
          ni siquiera sobre un bloque Hyrox con category:'metcon' -- así el
-         bloque cae siempre en su renderer estructural (isHyrox) */
-      if(window.COACH_DISCIPLINA !== 'sports' && esMetcon(b, weekIdx)) pizarra(el, b, weekIdx, day.id);
+         bloque cae siempre en su renderer estructural (isHyrox).
+         En CrossFit, la pizarra monta en CUALQUIER fase (Warm-up, Skill/
+         Strength, WOD/Metcon, Hyrox Stations, Accessory/Cooldown), no sólo
+         en la detectada como "metcon" -- de lo contrario Warm-up/Strength
+         caían en el renderer genérico de Bodybuilding, que el CSS de modo
+         CrossFit deja prácticamente vacío (el "bloque colapsado" reportado). */
+      if(window.COACH_DISCIPLINA !== 'sports' && Array.isArray(b.items)) pizarra(el, b, weekIdx, day.id);
       /* PR sobre lo que ya estaba cargado */
       el.querySelectorAll('.set-row').forEach(function(row){ chequearPR(row); });
     });
@@ -5583,11 +5887,137 @@ header.masthead.hd-top::before,header.masthead.hd-top::after{display:none !impor
     return h + 'h ' + String(rem).padStart(2, '0') + 'm';
   }
 
+  /* ---------- STORY CARD EXCLUSIVA CROSSFIT / HYROX ----------
+     Formato propio (no reutiliza dibujar(), pensado para hipertrofia):
+     kilos clave del bloque de fuerza/skill, estructura del WOD/Metcon y
+     el score final destacado en Cyan Táctico, en vez de volumen/series. */
+  function dibujarCF(d){
+    const c = document.getElementById('storyCanvas');
+    const g = c.getContext('2d');
+    g.clearRect(0, 0, W, H);
+
+    let bg = g.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#05070A'); bg.addColorStop(1, '#0D1117');
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    g.save();
+    g.fillStyle = 'rgba(255,255,255,.05)';
+    for(let yy = 20; yy < H; yy += 40){
+      for(let xx = 20; xx < W; xx += 40){ g.beginPath(); g.arc(xx, yy, 1.4, 0, Math.PI * 2); g.fill(); }
+    }
+    g.restore();
+    let vig = g.createRadialGradient(W / 2, H / 2, H * .25, W / 2, H / 2, H * .75);
+    vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.55)');
+    g.fillStyle = vig; g.fillRect(0, 0, W, H);
+
+    /* marco táctico -- esquinas tipo bracket, mismo lenguaje visual que
+       los "[ ]" de la Pizarra */
+    g.strokeStyle = 'rgba(224,109,45,.4)'; g.lineWidth = 3;
+    const m = 48, bl = 60;
+    [[m, m, 1, 1], [W - m, m, -1, 1], [m, H - m, 1, -1], [W - m, H - m, -1, -1]].forEach(function(p){
+      g.beginPath();
+      g.moveTo(p[0], p[1] + bl * p[3]);
+      g.lineTo(p[0], p[1]);
+      g.lineTo(p[0] + bl * p[2], p[1]);
+      g.stroke();
+    });
+
+    /* escudo superior con destello eléctrico cyan */
+    let glow = g.createRadialGradient(W / 2, 150, 10, W / 2, 150, 220);
+    glow.addColorStop(0, 'rgba(56,189,248,.35)'); glow.addColorStop(1, 'rgba(56,189,248,0)');
+    g.fillStyle = glow; g.fillRect(0, 0, W, 320);
+    escudoMini(g, W / 2, 70, 110);
+
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.fillStyle = '#38BDF8'; g.font = '700 30px "JetBrains Mono", ui-monospace, monospace';
+    g.fillText('[ CROSSFIT & HYROX ]', W / 2, 258);
+
+    var tituloLineas;
+    (function(){
+      var maxW = W - 160, tam = 76, lineas;
+      var env = window.CoachEnvolverTexto || function(gg, t){ return [t]; };
+      do {
+        g.font = '900 ' + tam + 'px "Plus Jakarta Sans", sans-serif';
+        lineas = env(g, ('COACH JP · ' + String(d.tituloWod || 'WOD')).toUpperCase(), maxW, 3);
+        if(lineas.length <= 3 && !lineas.recortado) break;
+        tam -= 6;
+      } while(tam > 44);
+      tituloLineas = { lineas: lineas, tam: tam };
+      g.fillStyle = '#FFFFFF';
+      lineas.forEach(function(ln, i){ g.fillText(ln, W / 2, 338 + i * (tam + 10)); });
+    })();
+    var yTras = 338 + tituloLineas.lineas.length * (tituloLineas.tam + 10) + 30;
+
+    g.fillStyle = '#E06D2D'; g.fillRect(W / 2 - 75, yTras, 150, 6);
+    var y = yTras + 60;
+
+    if(d.kgClave){
+      g.textAlign = 'left';
+      g.fillStyle = 'rgba(255,255,255,.045)'; redondear(g, 90, y, W - 180, 168, 26); g.fill();
+      g.strokeStyle = 'rgba(255,255,255,.1)'; g.lineWidth = 2; redondear(g, 90, y, W - 180, 168, 26); g.stroke();
+      g.fillStyle = '#E06D2D'; g.fillRect(90, y + 30, 6, 108);
+      g.fillStyle = '#A0A8B4'; g.font = '700 26px "JetBrains Mono", monospace';
+      g.fillText('KILOS CLAVE', 134, y + 50);
+      g.fillStyle = '#E06D2D'; g.font = '800 84px "Plus Jakarta Sans", sans-serif';
+      g.fillText(d.kgClave, 134, y + 132);
+      y += 190;
+    }
+
+    if(d.estructura){
+      g.textAlign = 'left';
+      g.fillStyle = 'rgba(255,255,255,.045)'; redondear(g, 90, y, W - 180, 168, 26); g.fill();
+      g.strokeStyle = 'rgba(255,255,255,.1)'; g.lineWidth = 2; redondear(g, 90, y, W - 180, 168, 26); g.stroke();
+      g.fillStyle = '#38BDF8'; g.fillRect(90, y + 30, 6, 108);
+      g.fillStyle = '#A0A8B4'; g.font = '700 26px "JetBrains Mono", monospace';
+      g.fillText('ESTRUCTURA DEL WOD', 134, y + 50);
+      var env2 = window.CoachEnvolverTexto || function(gg, t){ return [t]; };
+      g.font = '800 46px "Plus Jakarta Sans", sans-serif';
+      var el = env2(g, d.estructura, W - 268, 2);
+      g.fillStyle = '#FFFFFF';
+      el.forEach(function(ln, i){ g.fillText(ln, 134, y + 100 + i * 52); });
+      y += 190;
+    }
+
+    if(d.score){
+      g.fillStyle = 'rgba(56,189,248,.08)'; redondear(g, 90, y, W - 180, 210, 26); g.fill();
+      g.strokeStyle = 'rgba(56,189,248,.45)'; g.lineWidth = 2; redondear(g, 90, y, W - 180, 210, 26); g.stroke();
+      g.textAlign = 'center';
+      g.fillStyle = '#7CC5E8'; g.font = '700 28px "JetBrains Mono", monospace';
+      g.fillText('[ SCORE FINAL ]', W / 2, y + 56);
+      var scoreTxt = String(d.score).toUpperCase();
+      var fsScore = 96;
+      g.font = '900 ' + fsScore + 'px "Plus Jakarta Sans", sans-serif';
+      while(g.measureText(scoreTxt).width > (W - 260) && fsScore > 48){
+        fsScore -= 4; g.font = '900 ' + fsScore + 'px "Plus Jakarta Sans", sans-serif';
+      }
+      g.fillStyle = '#38BDF8';
+      g.fillText(scoreTxt, W / 2, y + 160);
+      y += 240;
+    }
+
+    g.textAlign = 'center';
+    g.fillStyle = '#FFFFFF'; g.font = '700 34px "Plus Jakarta Sans", sans-serif';
+    g.fillText((d.atleta || 'Atleta') + ' · Day Completed', W / 2, H - 130);
+    g.fillStyle = 'rgba(245,197,24,.14)'; redondear(g, W / 2 - 170, H - 100, 340, 56, 28); g.fill();
+    g.strokeStyle = 'rgba(245,197,24,.5)'; g.lineWidth = 2; redondear(g, W / 2 - 170, H - 100, 340, 56, 28); g.stroke();
+    g.fillStyle = '#F5C518'; g.font = '700 22px "JetBrains Mono", monospace';
+    g.fillText('COACH JP · HIGH PERFORMANCE', W / 2, H - 64);
+
+    return c;
+  }
+
   function abrirStory(d){
     if(document.fonts && document.fonts.ready){
       document.fonts.ready.then(function(){ dibujar(d); }).catch(function(){ dibujar(d); });
     }
     dibujar(d);
+    document.getElementById('storyWrap').classList.add('on');
+    try{ if(navigator.vibrate) navigator.vibrate([40, 40, 80]); }catch(e){}
+  }
+  function abrirCF(d){
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(function(){ dibujarCF(d); }).catch(function(){ dibujarCF(d); });
+    }
+    dibujarCF(d);
     document.getElementById('storyWrap').classList.add('on');
     try{ if(navigator.vibrate) navigator.vibrate([40, 40, 80]); }catch(e){}
   }
@@ -5869,7 +6299,7 @@ header.masthead.hd-top::before,header.masthead.hd-top::after{display:none !impor
     document.addEventListener('change', _marcarInicioSesion);
     document.addEventListener('input', _marcarInicioSesion);
       window.CoachPWA = { icono: iconoPNG, boton: pwaBoton, rol: 'athlete' };
-    window.CoachStory = { abrir: abrirStory, dibujar: dibujar, cerrar: cerrarStory };
+    window.CoachStory = { abrir: abrirStory, abrirCF: abrirCF, dibujar: dibujar, dibujarCF: dibujarCF, cerrar: cerrarStory };
     window.CoachFmtDuracion = fmtDuracionStory;
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
@@ -6213,7 +6643,8 @@ header.masthead.hd-top::before,header.masthead.hd-top::after{display:none !impor
     var k = parseFloat(kg) || 0, r = parseInt(reps, 10) || 1;
     if(!(k > 0)) return 0;
     if(r <= 1) return k;
-    return Math.round(k * (1 + r / 30) * 10) / 10;
+    var rCap = Math.min(r, 12);
+    return Math.round(k * (1 + rCap / 30) * 10) / 10;
   }
   window.CoachE1RM = e1rm;
 
@@ -7950,6 +8381,15 @@ body.ses-paused .set-tracker,body.ses-paused .jp-tools,body.ses-paused .rir-bar{
     return /complex/i.test(t) || (/weightlifting|halterofilia/i.test(t) && /\+/.test((bl.querySelector('.ex-name') || {}).textContent || ''));
   }
   function esWodBloque(bl){
+    /* FIX (estrategia de videos en CrossFit/Hyrox): Accessory/Cooldown
+       vincula video por ejercicio igual que Sports & Bodybuilding -- no
+       se agrupa en el glosario final como el resto de las fases de la
+       Pizarra (Warm-up/Skill/WOD/Hyrox Stations), donde sí se suprime.
+       .jp-cfboard también carga la clase .wod-board (identidad visual
+       compartida), así que sin esta excepción el chequeo de abajo
+       (bl.querySelector('.wod-board')) le vaciaba el video recién
+       auto-matcheado en compile() -- limpiar() lo movía al glosario. */
+    if(bl.querySelector('.jp-cfboard.jp-cf-fase-accessory')) return false;
     /* en la vista CrossFit todos los videos se agrupan en el glosario final */
     if(document.body.classList.contains('cf-modo')) return true;
     if(bl.classList.contains('cat-metcon')) return true;
@@ -8138,7 +8578,11 @@ body.ses-paused .set-tracker,body.ses-paused .jp-tools,body.ses-paused .rir-bar{
       /* iconizar() queda deshabilitado: capsulas() (más abajo) es la que
          monta las herramientas de serie sobre .jp-tools, sin el ícono
          combinado de "Asistente de Discos" (directiva de rediseño). */
-      escalado(); sugerencias(); feedback(); pintarUnidad();
+      /* escalado() (panel "Nivel de hoy" RX/Advanced/Scaled/Intro) se retira
+         de la Pizarra Táctica: la prescripción ya aclara RX/Scaled en el
+         texto de cada línea, y el panel quedaba como ruido residual al pie
+         del bloque (directiva de refactor del parser de Pizarra). */
+      sugerencias(); feedback(); pintarUnidad();
     }catch(e){}
   }
   window.CoachMetodologia = { repintar: repintar, glosario: glosario, sugerencias: sugerencias };
@@ -10724,9 +11168,12 @@ body.cf-modo .block .block-body > .cf-cierre{display:block !important}
   }
   function cierres(){
     document.querySelectorAll('.block').forEach(function(bl){
+      var viejo = bl.querySelector('.cf-cierre');
+      /* la Pizarra Táctica (jp-cfboard) ya pinta su propio acordeón de
+         objetivo/tips/pacing/escalado -- pintarlo también acá lo duplica */
+      if(bl.querySelector('.jp-cf-acc')){ if(viejo) viejo.remove(); return; }
       var b = bloqueDe(bl.dataset.blockId);
       var c = b && b.cierre;
-      var viejo = bl.querySelector('.cf-cierre');
       if(!c || !(c.objetivo || c.tips || c.pacing)){ if(viejo) viejo.remove(); return; }
       var html =
         (c.objetivo ? '<div class="cc-s"><h5>Objetivo fisiol&oacute;gico / est&iacute;mulo</h5><p>' + esc(c.objetivo) + '</p></div>' : '') +
@@ -12722,9 +13169,9 @@ body.cf-modo .block .block-body > .cf-levels{display:block !important}
   function video(nombre){
     return (typeof videoLinkHtml === 'function') ? videoLinkHtml(nombre) : '';
   }
-  function filas(dayId, blockId, exIdx, rondas, hint){
+  function filas(dayId, blockId, exIdx, rondas, hint, nombre){
     if(typeof renderSetRows === 'function')
-      return renderSetRows(state.currentWeek || 0, dayId, blockId, exIdx, rondas, hint || 'Reps');
+      return renderSetRows(state.currentWeek || 0, dayId, blockId, exIdx, rondas, hint || 'Reps', 0, nombre);
     return '';
   }
   function reconstruir(){
@@ -12812,7 +13259,7 @@ body.cf-modo .block .block-body > .cf-levels{display:block !important}
             '<span class="ex-name">' + esc(x.name) + video(x.name) + '</span>' +
             (x.reps ? '<span class="ex-detail">' + esc(x.reps) + '</span>' : '') +
           '</div>' +
-          filas(dia.id, bl.dataset.blockId, i, rondas, x.reps);
+          filas(dia.id, bl.dataset.blockId, i, rondas, x.reps, x.name);
       }).join('');
 
       var caja = bl.querySelector('.core-build');
@@ -15239,6 +15686,10 @@ body{font-size:var(--fz-body) !important}
 .block .set-row .set-load{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;flex-wrap:nowrap}
 .block .set-row .set-load > .set-field{flex:1 1 0 !important;min-width:0 !important}
 .block .set-row > .set-row-label{flex:0 0 auto}
+/* casilleros dinámicos (bandas/peso corporal): sin campo de Kg, el único
+   .set-field (Reps) queda centrado en vez de pegado a la izquierda */
+.block .set-row .set-load.set-load-banda{justify-content:center}
+.block .set-row .set-load.set-load-banda > .set-field{flex:0 1 140px !important}
 .block .set-row .set-load > .set-check{flex:0 0 auto;margin-left:auto}
 .block .set-row .set-load > .set-x{flex:0 0 auto}
 /* pulido (trisets/unidades/háptica): Kg/Reps pasan a vivir dentro de un
@@ -17116,6 +17567,11 @@ input[type="checkbox"]:active{
   }
 
   function pintarCriterios(){
+    /* limpieza de la Pizarra Táctica (2026-09-16): "Criterio del Coach"
+       por bloque y "Criterio del día" son fundamentación de Bodybuilding
+       (orden de bloques por demanda, etc.) -- no aplican a CrossFit, donde
+       el acordeón de la propia pizarra ya cubre objetivo/tips/pacing. */
+    if(window.COACH_DISCIPLINA !== 'sports') return;
     var bloques = document.querySelectorAll('.block[data-block-id]');
     for(var i = 0; i < bloques.length; i++){
       var bl = bloques[i];
@@ -17962,6 +18418,7 @@ body.focus-mode .hd-dock{display:none}
      El rail deja hueco vacío debajo de la identidad/anillo/dock, y ahí
      la 'J' queda expuesta y recortada — se oculta solo en escritorio. */
   body::before{ display:none; }
+  body::after{ display:none; }
 }
 </style>
 
@@ -18769,6 +19226,7 @@ body.focus-mode .hd-dock{display:none}
     box-shadow:0 0 0 1px #1F2630, 0 30px 80px rgba(0,0,0,.55);
   }
   body::before{ display:none; } /* watermark "JP": sin marco de referencia propio se vería fuera de lugar, se apaga en escritorio */
+  body::after{ display:none; } /* filamentos "Thunder Stealth": van atados al isotipo JP, se apagan junto con él */
   .hd-compact, .hd-dock{
     left:50% !important; right:auto !important;
     transform:translateX(-50%) !important;
@@ -18888,6 +19346,276 @@ body.focus-mode .hd-dock{display:none}
   else mount();
 })();
 </script>
+
+<style>
+/* =========================================================
+   PIZARRA TÁCTICA — identidad CrossFit (showcase V8/9)
+   Último <style> del documento a propósito: gana los empates de
+   especificidad contra las reglas viejas de .wod-board/.wb-* (varias
+   con !important) sin tocarlas ni arriesgar Bodybuilding.
+========================================================= */
+/* =========================================================
+   DESIGN TOKENS UNIFICADOS (directiva de Showroom, aprobado) --
+   paleta oficial compartida por Sports & Bodybuilding y CrossFit &
+   Hyrox. Nombres nuevos a propósito (no pisan --bg/--gold/etc. de los
+   :root ya existentes más arriba): cualquier regla puede usarlos sin
+   depender de en qué orden se declararon los otros :root del documento.
+========================================================= */
+:root{
+  --stealth-0:#080B10; --stealth-1:#0D1117;
+  --orange:#E06D2D; --cyan:#38BDF8; --amber:#F5C518;
+  --emerald:#2DD4BF; --violet:#818CF8;
+  --panel:#0E131C; --panel-glass:rgba(14,19,28,.85); --line:rgba(255,255,255,.08);
+}
+/* fondo global de alto rendimiento (micro-dot matrix) -- reemplaza la
+   cuadrícula de 24px que antes vivía DENTRO de cada tarjeta (competía con
+   el texto). Va en el body, no en las cards: las cards ahora son un panel
+   sólido translúcido limpio (ver .jp-cfboard/.jp-vault-day más abajo). */
+body.cf-disc{
+  background:
+    radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px) 0 0/20px 20px,
+    linear-gradient(180deg, var(--stealth-0), var(--stealth-1)) !important;
+}
+/* la Pizarra Táctica (.jp-cfboard) es el contenedor principal del bloque en
+   CrossFit -- se retira la doble cabecera de Bodybuilding (ícono + label +
+   checkbox + chevron) y el "cajón" del .block que la envolvía, para que el
+   bloque arranque directo con "[ CROSSFIT · FASE ]". Sin chevron/checkbox
+   visibles no hay forma de disparar el colapso manual, pero se refuerza
+   igual por si algo más agrega .collapsed: en CrossFit el cuerpo del
+   bloque SIEMPRE queda abierto. */
+body.cf-disc .block:has(.jp-cfboard){
+  border:none !important; background:none !important; border-left:none !important;
+  box-shadow:none !important; border-radius:0 !important; overflow:visible !important;
+}
+body.cf-disc .block:has(.jp-cfboard) > .block-header{ display:none !important; }
+body.cf-disc .block:has(.jp-cfboard) > .block-body{ padding:0 !important; display:block !important; }
+body.cf-disc .block.collapsed:has(.jp-cfboard) > .block-body{ display:block !important; }
+/* cinturón y tiradores: cualquier resabio de Bodybuilding que quedara como
+   hermano de la pizarra dentro del mismo .block-body (carga sugerida, notas
+   del bloque) se oculta acá -- no depende de body.cf-modo, que sólo se
+   activa en días 100% CrossFit y nunca en días híbridos. */
+body.cf-disc .block:has(.jp-cfboard) > .block-body > *:not(.jp-cfboard){ display:none !important; }
+.wod-board.jp-cfboard{
+  background:var(--panel-glass) !important;
+  backdrop-filter:blur(8px) !important; -webkit-backdrop-filter:blur(8px) !important;
+  border:1px solid var(--line) !important;
+  border-top:2px solid rgba(224,109,45,.5) !important;
+  border-radius:10px !important;
+  padding:14px !important;
+  display:block !important;
+}
+/* codificación cromática táctica por fase: borde superior + color del tag
+   propios de cada etapa de la sesión (branding editorial suizo).
+   Prefijo body.cf-disc + .wod-board repetido a propósito: el sistema viejo
+   de "disciplina" (.block.disc-warm/.disc-met/... .wod-board{border-color
+   !important}, ~línea 15451) tiene 3 clases de especificidad y si no, gana
+   él y pisa el borde por fase acá definido. */
+body.cf-disc .wod-board.jp-cfboard.jp-cf-fase-warmup{ border-top-color:rgba(245,197,24,.4) !important; }
+body.cf-disc .wod-board.jp-cfboard.jp-cf-fase-strength{ border-top-color:rgba(56,189,248,.4) !important; }
+body.cf-disc .wod-board.jp-cfboard.jp-cf-fase-metcon{ border-top-color:rgba(224,109,45,.5) !important; }
+body.cf-disc .wod-board.jp-cfboard.jp-cf-fase-cardio{ border-top-color:rgba(45,212,191,.4) !important; }
+body.cf-disc .wod-board.jp-cfboard.jp-cf-fase-accessory{ border-top-color:rgba(129,140,248,.4) !important; }
+.jp-cfboard.jp-cf-fase-warmup .jp-cf-tag{ color:var(--amber); }
+.jp-cfboard.jp-cf-fase-strength .jp-cf-tag{ color:var(--cyan); }
+.jp-cfboard.jp-cf-fase-metcon .jp-cf-tag{ color:var(--orange); }
+.jp-cfboard.jp-cf-fase-cardio .jp-cf-tag{ color:var(--emerald); }
+.jp-cfboard.jp-cf-fase-accessory .jp-cf-tag{ color:var(--violet); }
+.jp-cfboard .jp-cf-tag{
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:#38BDF8; margin-bottom:8px;
+}
+.jp-cfboard .jp-cf-title{
+  font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.35rem;
+  text-transform:uppercase; line-height:1.05; margin-bottom:10px;
+}
+.jp-cfboard .jp-cf-t1{ color:#fff; }
+.jp-cfboard .jp-cf-t2{ color:#E06D2D; }
+.jp-cfboard .jp-cf-fmtbar{
+  font-family:'JetBrains Mono',monospace; font-weight:800; font-size:13px; letter-spacing:.04em;
+  padding:8px 11px; border-radius:8px; background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.3);
+  margin-bottom:10px;
+}
+.jp-cfboard .jp-cf-fmtbar .a{ color:#fff; }
+.jp-cfboard .jp-cf-fmtbar .b{ color:#E06D2D; margin-left:6px; }
+.jp-cfboard .jp-cf-rows{ display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+.jp-cfboard .jp-cf-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.02);
+}
+.jp-cfboard .jp-cf-row.jp-cf-header{
+  display:block; background:none; border:none; padding:14px 0 2px; margin:0;
+  font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:14.5px;
+  letter-spacing:.01em; color:#fff;
+}
+.jp-cfboard .jp-cf-rows .jp-cf-row.jp-cf-header:first-child{ padding-top:0; }
+.jp-cfboard .jp-cf-row.jp-cf-badge{
+  display:inline-flex; align-items:center; width:fit-content;
+  padding:5px 10px; margin:1px 0; border-radius:20px;
+  background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.3);
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:10.5px;
+  letter-spacing:.05em; text-transform:uppercase; color:#38BDF8;
+}
+/* esquema de reps (21-15-9, 5-5-5-5-5): pastilla táctica en Naranja Marca,
+   distinta de los badges de transición (Cap/Rest/AMRAP suelto) en Cyan */
+.jp-cfboard .jp-cf-row.jp-cf-scheme{
+  display:inline-flex; align-items:center; width:fit-content;
+  padding:5px 10px; margin:1px 0; border-radius:20px;
+  background:rgba(224,109,45,.12); border:1px solid rgba(224,109,45,.4);
+  font-family:'JetBrains Mono',monospace; font-weight:800; font-size:11px;
+  letter-spacing:.05em; color:#E06D2D;
+}
+.jp-cfboard .jp-cf-rn{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:14.5px; color:#EDEFF2; }
+.jp-cfboard .jp-cf-rv{ font-family:'JetBrains Mono',monospace; font-weight:800; font-size:13.5px; color:#38BDF8; flex-shrink:0; text-align:right; }
+.jp-cfboard .jp-cf-row strong{ color:#E06D2D; font-weight:800; }
+.jp-cfboard .jp-cf-num{ color:#38BDF8; font-weight:800; }
+.jp-cfboard details.jp-cf-acc{ margin-top:2px; padding-top:10px; border-top:1px dashed rgba(255,255,255,.12); }
+.jp-cfboard details.jp-cf-acc summary{
+  cursor:pointer; list-style:none; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px;
+  letter-spacing:.08em; text-transform:uppercase; color:#38BDF8;
+}
+.jp-cfboard details.jp-cf-acc summary::-webkit-details-marker{ display:none; }
+.jp-cfboard .jp-cf-accrow{ margin-top:9px; }
+.jp-cfboard .jp-cf-accrow .lb{
+  display:block; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; color:#7CC5E8; margin-bottom:2px;
+}
+.jp-cfboard .jp-cf-accrow p{ margin:0; font-family:'Inter',sans-serif; font-size:13px; line-height:1.55; color:#A0A8B4; }
+.jp-cfboard .wod-score{
+  margin-top:12px !important; padding-top:12px !important; border-top:1px solid rgba(255,255,255,.1) !important;
+  background:none !important; display:flex !important; gap:8px; align-items:center; flex-wrap:wrap;
+}
+.jp-cfboard .wod-score label{
+  font-family:'JetBrains Mono',monospace !important; font-weight:700 !important; font-size:10.5px !important;
+  letter-spacing:.08em !important; text-transform:uppercase; color:#38BDF8 !important;
+}
+.jp-cfboard .wod-score input{
+  flex:1; min-width:120px; padding:9px 11px; border-radius:8px !important; border:1px solid rgba(255,255,255,.16) !important;
+  background:rgba(0,0,0,.35) !important; color:#EDEFF2 !important; font-family:'JetBrains Mono',monospace; font-size:14px !important;
+}
+.jp-cfboard .ws-ok{ color:#48D597 !important; font-size:11px; font-weight:700; }
+/* Accessory/Cooldown: campo libre de notas de carga/sensaciones en vez
+   del tracker serie por serie -- mismo tratamiento visual que [ SCORE ]
+   pero en violeta, la identidad de esta fase. */
+.jp-cfboard .jp-cf-notas{
+  margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.1);
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+}
+.jp-cfboard .jp-cf-notas label{
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:10.5px;
+  letter-spacing:.08em; text-transform:uppercase; color:#818CF8;
+}
+.jp-cfboard .jp-cf-notas input{
+  flex:1; min-width:160px; padding:9px 11px; border-radius:8px; border:1px solid rgba(255,255,255,.16);
+  background:rgba(0,0,0,.35); color:#EDEFF2; font-family:'Inter',sans-serif; font-size:13px;
+}
+
+/* Vault Técnico del Día */
+.jp-vault-day{
+  margin-top:14px; padding:14px; border-radius:10px; border:1px solid var(--line);
+  background:var(--panel-glass);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+}
+.jp-vault-head{
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:#38BDF8; margin-bottom:10px;
+}
+.jp-vault-strip{ display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; -ms-overflow-style:none; -webkit-overflow-scrolling:touch; }
+.jp-vault-strip::-webkit-scrollbar{ display:none; }
+.jp-vault-clip{ flex-shrink:0; width:150px; }
+.jp-vault-frame{ width:150px; height:84px; border-radius:8px; overflow:hidden; border:1px solid rgba(56,189,248,.35); background:#000; }
+.jp-vault-frame iframe{ width:100%; height:100%; border:0; }
+.jp-vault-lb{
+  margin-top:6px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:12px; color:#EDEFF2;
+  text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+/* =========================================================
+   HEADER TÁCTICO: chips de día + selector de semanas (CrossFit)
+   Elimina la doble etiqueta "Día X — Semana Y / Día X" y rediseña los
+   chips heredados de Bodybuilding a la identidad V8/9 -- todo scopeado a
+   body.cf-disc, Bodybuilding no se toca.
+========================================================= */
+body.cf-disc .day-header{ display:none !important; }
+body.cf-disc .week-tabs-wrap,
+body.cf-disc .week-selector-wrap{
+  background:transparent !important; border:none !important; box-shadow:none !important; backdrop-filter:none !important;
+}
+body.cf-disc .day-tab{
+  background:rgba(255,255,255,.04) !important; border:1px solid rgba(255,255,255,.1) !important;
+  border-radius:999px !important; box-shadow:none !important;
+}
+body.cf-disc .day-tab .tab-name{
+  font-family:'JetBrains Mono',monospace !important; font-weight:700 !important; color:#A0A8B4 !important;
+}
+body.cf-disc .day-tab .tab-label{
+  font-family:'JetBrains Mono',monospace !important; color:#5A6577 !important;
+}
+body.cf-disc .day-tab.active{
+  border-color:#E06D2D !important; background:rgba(224,109,45,.1) !important;
+}
+body.cf-disc .day-tab.active .tab-name{ color:#fff !important; }
+body.cf-disc .day-tab .day-dot{ opacity:.3; }
+body.cf-disc .day-tab.active .day-dot{
+  background:#F5C518 !important; opacity:1; box-shadow:0 0 8px rgba(245,197,24,.6) !important;
+}
+body.cf-disc .day-tab.completed-day .day-dot{ background:#38BDF8 !important; opacity:1; box-shadow:0 0 8px rgba(56,189,248,.5) !important; }
+/* selector de semanas: barra segmentada minimalista, sin cajas dobles */
+body.cf-disc .week-pill{
+  border-radius:999px !important; border:1px solid rgba(255,255,255,.08) !important;
+  background:rgba(255,255,255,.02) !important; box-shadow:none !important; min-width:0 !important;
+}
+body.cf-disc .week-pill-name{ font-family:'JetBrains Mono',monospace !important; }
+body.cf-disc .week-pill.active{
+  border-color:rgba(56,189,248,.4) !important; background:rgba(56,189,248,.08) !important; box-shadow:none !important;
+}
+body.cf-disc .week-pill.active .week-pill-name{ color:#38BDF8 !important; text-shadow:none !important; }
+
+/* =========================================================
+   CIERRE TÁCTICO: Story Card + Día Completo (paleta oficial)
+========================================================= */
+body.cf-disc .story-cta{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; margin:22px 0 0; padding:15px 20px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.14); border-radius:14px;
+  font-family:'JetBrains Mono',monospace; font-weight:800; font-size:.85rem; letter-spacing:.1em; text-transform:uppercase;
+  color:#EDEFF2; cursor:pointer; min-height:54px;
+}
+body.cf-disc .story-cta:hover{ border-color:rgba(224,109,45,.4); color:#E06D2D; }
+/* directiva de unificación de branding (Showroom aprobado) + pulido
+   "Glass Táctico Pro": el botón de cierre de sesión pasa a la paleta
+   oficial en TODA la aplicación (ya no sólo CrossFit) -- Sports &
+   Bodybuilding pierde el verde brillante que quedaba fuera de paleta.
+   Sin prefijo body.cf-disc a propósito; gana por orden de aparición
+   (es el último <style> del documento) sobre la regla original de
+   .day-complete-cta/.done más arriba. */
+.day-complete-cta{
+  background:linear-gradient(135deg, rgba(224,109,45,.85), rgba(224,109,45,.45)) !important;
+  backdrop-filter:blur(12px) !important; -webkit-backdrop-filter:blur(12px) !important;
+  border:1px solid transparent !important;
+  border-image:linear-gradient(180deg, rgba(245,197,24,.6), rgba(224,109,45,.2)) 1 !important;
+  box-shadow:0 8px 32px rgba(224,109,45,.25), inset 0 1px 0 rgba(255,255,255,.2) !important;
+  color:#fff !important;
+  font-family:'Plus Jakarta Sans',sans-serif !important; font-weight:800 !important;
+  letter-spacing:.08em !important;
+  transition:background .5s ease, box-shadow .5s ease !important;
+}
+.day-complete-cta .dcc-ic{
+  background:rgba(255,255,255,.16) !important; border-color:rgba(255,255,255,.28) !important;
+  color:#fff !important; transition:background .5s ease, color .5s ease, box-shadow .5s ease !important;
+}
+/* al completarse: fondo carbón/cyan (en vez del naranja sólido) + el
+   checkmark pasa a dorado con un micro-glow -- misma tarjeta, estado
+   claramente distinto sin volver al verde fuera de paleta. */
+.day-complete-cta.done{
+  background:linear-gradient(135deg, rgba(8,11,16,.92), rgba(56,189,248,.28)) !important;
+  border-image:linear-gradient(180deg, rgba(245,197,24,.55), rgba(56,189,248,.25)) 1 !important;
+  box-shadow:0 8px 32px rgba(56,189,248,.22), inset 0 1px 0 rgba(255,255,255,.16) !important;
+  color:#EDEFF2 !important;
+}
+.day-complete-cta.done .dcc-ic{
+  background:rgba(245,197,24,.18) !important; border-color:rgba(245,197,24,.55) !important;
+  color:#F5C518 !important; box-shadow:0 0 12px rgba(245,197,24,.55) !important;
+}
+</style>
 
 </body>
 </html>
